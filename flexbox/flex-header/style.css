@@ -1,0 +1,47 @@
+body{
+    font-family: serif;
+
+}
+.container{
+    background-color: antiquewhite;
+   justify-content:space-between;
+    display: flex;
+    padding: 10px;
+    align-items: center;
+   
+}
+
+
+
+a{
+    font-size: 15px;
+    background: white;
+    padding: 8px;
+    text-decoration: none;
+    margin: 5px;
+    color: blue;
+    font-weight: 700;
+  
+   min-width: 0;
+}
+.logo{
+   
+    width:100px;
+    font-weight: 900;
+    font-size: xx-large;
+    color: rgb(241, 102, 102);
+   background-color: white;
+  
+   padding: 9px;
+       
+   
+  
+}
+.left,.right{
+    display: flex;
+    flex-direction: row;
+}
+ .right{
+    min-width: 0;
+   
+ }
