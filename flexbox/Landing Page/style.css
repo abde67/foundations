@@ -1,0 +1,145 @@
+body{
+  margin: 0;
+}
+header{
+    background-color: #1f2937;
+    padding:10px 40px;
+}
+.header-footer{
+    display: flex;
+    justify-content: space-between;
+  
+}
+.logo{
+  font-size: 24px; 
+  color: #f9faf8; 
+}
+.links{
+    display: flex;
+   gap: 16px;
+
+}
+a{
+    text-decoration: none;
+    color:#e5e7eb;
+    font-size: 18px;
+}
+.headers{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.header-info >h2{
+ font-size: 48px;
+ color: #f9faf8;
+ font-weight: 900;
+}
+.header-info>p{
+    font-size: 18px;
+    color: #e5e7eb;
+max-width: 410px;
+}
+.sign-up1{
+    background-color: #3882f6;
+    padding: 10px 40px;
+    border: none;
+    border-radius: 10px;
+    color: #f9faf8;
+    font-size: medium;
+}
+.image-holder{
+    width:50%;
+    background: #515150;
+    height: 100px;
+    padding-top: 70px;
+    text-align: center;
+}
+.image-text{
+color: #e5e7eb;
+}
+main{
+   margin: 0;
+}
+.image-info{
+    display: flex;
+     gap: 10px;
+    align-items: center;
+}
+.info-span{
+  font-size: 36px;
+  font-weight: 900;
+  color: #1f2937; 
+  padding: 50px; 
+}
+.images{
+ max-width: 150px;
+}
+.first{
+display: flex;
+flex-direction: column;
+align-items: center;
+background-color: azure;
+
+}
+.image{
+    border: #3882f6 solid 4px;
+    border-radius: 20px;
+    height: 100px;
+
+}
+.second{
+    background-color:#e5e7eb ;
+  
+padding-top: 30px;
+padding-bottom: 40px;
+  text-align: center;
+}
+.some-quote{
+ font-size: 36px;
+ font-style: italic;
+ font-weight: lighter;
+ color: #1f2937;
+ padding: 30px;
+ 
+
+}
+.author{
+    font-weight: 900;
+    padding-left: 200px;
+   font-size: 24px;
+  
+ 
+}
+.third{
+    background-color: #3882f6 ;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 40px;
+    margin: 40px;
+}
+.sign-info{
+    color: #e5e7eb;
+    font-size: 22px;
+    margin-top: 0;
+}
+.call-to-action{
+    color: #e5e7eb;
+    font-size: 26px; 
+   
+}
+.sign-up2{
+    color: #f9faf8;
+    padding: 10px 40px;
+    border: 2px solid white;
+    border-radius: 10px;
+   background-color:  #3882f6;
+    font-size: medium;  
+}
+.last-footer{
+    background-color: #1f2937;  
+    padding: 35px;
+    color: #f9faf8;
+    font-size: 18px;
+    text-align: center;
+}
