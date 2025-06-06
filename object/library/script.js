@@ -1,15 +1,12 @@
-const myLibrary=[];
-function Book(title,author,page,isRead){
-  this.title=title;
-  this.author= author;
-  this.page=page;
-  this.isRead=isRead;
-  
-}
+const showBtn = document.getElementById("show-dialog");
+const dialog = document.getElementById("dialog");
+const jsCloseBtn = dialog.querySelector("#js-close");
 
-function addBookLibrary(){
-  const bookId=crypto.randomUUID();
-  const bookAdded=new Book(bookId,title,author,package,isRead);
-  myLibrary.push(bookAdded);
-  
-}
+showBtn.addEventListener("click", () => {
+  dialog.showModal();
+});
+
+jsCloseBtn.addEventListener("click", (e) => {
+  e.preventDefault();
+  dialog.close();
+});
