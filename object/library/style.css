@@ -1,8 +1,28 @@
-#output
-{
-  padding: 20px;
-  width: auto;
-  height: 44px;
-  border: 3px ridge rgb(159, 190, 35);
+form{
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+form .input{
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-weight: 600;
+  font-size: 16px;
 
+}
+input{
+  border: 3px solid rgb(143, 209, 229);
+  padding: 10px;
+    font-weight: 600;
+  font-size: 16px;
+
+}
+form .submit{
+  background-color: rgb(102, 156, 187);
+
+}
+.submit:active{
+  background-color: rgb(129, 161, 180) ;
+  padding: 9.8px;
 }
