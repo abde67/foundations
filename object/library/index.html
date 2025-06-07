@@ -9,31 +9,34 @@
  
 </head>
 <body>
-  <dialog id="favDialog">
-    <form >
-      <p>
-        <label>favorite animal
-        <select name="" id="">
-          <option value="default">choose</option>
-          <option >brine shimp</option>
-          <option >red panda</option>
-          <option >spider monkey</option>
-        </select></label>
-      </p>
-      <div>
-        <button value="cancle" formmethod="dialog">cancle</button>
-        <button value="default" id="confirmBtn">confirm</button>
-      </div>
-    </form>
-   
-  </dialog>
-  <p><button id="showDialog">show dialog</button></p>
-  <div id="output">
-    <output></output>
-  </div>
-  
+<button id="addBooks">add Books</button>
 
+
+<div id="showBooks"></div>
 <script src="script.js"></script>
+<dialog open="open" >
+  <form action="">
+    <div class="input">
+      <label for="title">title</label>
+      <input type="text" name="title" id="title">
+    </div>
+    <div  class="input">
+      <label for="author">author</label>
+      <input type="text" name="author" id="author">
+    </div>
+    <div class="input">
+      <label for="page">number of page</label>
+      <input type="number" name="page" id="page">
+    </div>
+    <div>
+      <input type="radio" name="isRead" id="isRead">yes
+      <input type="radio" name="isRead" id="isRead">no
+    </div>
+    
+      <input type="button" class="submit" name="submit" value="submit">
+   
+  </form>
+</dialog>
 
 </body>
 </html>
