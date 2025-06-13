@@ -12,6 +12,7 @@ function Book(title, author,page, isRead){
 
 function addBookToLibrary(){
   myLibrary.push(Book);
+  console.log(maylibrary[i]);
 }
 
 
