@@ -20,7 +20,7 @@ input{
 }
 form .submit{
   background-color: rgb(102, 156, 187);
-
+  padding: 20%;
 }
 .submit:active{
   background-color: rgb(129, 161, 180) ;
