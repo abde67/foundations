@@ -1,6 +1,6 @@
 
-  const addBooks=document.getElementById('addBooks');
-  const showBooks=document.getElementById('showBooks');
+const addBooks=document.getElementById('addBooks');
+const showBooks=document.getElementById('showBooks');
 const myLibrary=[];
 
 function Book(title, author,page, isRead){
