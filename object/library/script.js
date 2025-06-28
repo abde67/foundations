@@ -1,25 +1,29 @@
 
 const addBooks=document.getElementById('addBooks');
 const showBooks=document.getElementById('showBooks');
+const dialog=document.querySelector("dialog");
+const output=document.querySelector('output');
+const submit=document.querySelector('#submit');
+const form=document.querySelector("form");
+
+
 const myLibrary=[];
 
-function Book(title, author,page, isRead){
-  this.title=title;
-  this.author=author;
-  this.page=page;
-  this.isRead=isRead;
-}
-
-function addBookToLibrary(){
-  myLibrary.push(Book);
-  console.log(maylibrary[i]);
-}
+   
 
 
 
 
 
-const divBook=document.createElement("div");
-divBook.setAttribute('id','divBook');
+addBooks.addEventListener("click", () => {
+  dialog.showModal();});
 
-showBooks.append(divBook)
+  dialog.addEventListener('close',(e)=>{
+    output.value=
+    dialog.returnValue==="default"?"no return value"
+    :`book= ${dialog.returnValue}.`;
+  })
+submit.addEventListener('click',(event)=>{
+  event.preventDefault();
+  dialog.close(form.value);
+});
