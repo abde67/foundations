@@ -3,553 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alex Johnson - Portfolio</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-        
-        .gradient-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-        
-        .card-hover {
-            transition: all 0.3s ease;
-        }
-        
-        .card-hover:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-        }
-        
-        .skill-bar {
-            transition: width 2s ease-in-out;
-        }
-        
-        .fade-in {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.6s ease;
-        }
-        
-        .fade-in.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        
-        .nav-link {
-            position: relative;
-            transition: color 0.3s ease;
-        }
-        
-        .nav-link::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 2px;
-            bottom: -4px;
-            left: 0;
-            background-color: #667eea;
-            transition: width 0.3s ease;
-        }
-        
-        .nav-link:hover::after,
-        .nav-link.active::after {
-            width: 100%;
-        }
-    </style>
+    <title>Document</title>
 </head>
-<body class="bg-gray-50">
-    <!-- Navigation -->
-    <nav class="fixed top-0 w-full bg-white/90 backdrop-blur-md z-50 shadow-sm">
-        <div class="max-w-6xl mx-auto px-6 py-4">
-            <div class="flex justify-between items-center">
-                <div class="text-2xl font-bold text-gray-800">AJ</div>
-                <div class="hidden md:flex space-x-8">
-                    <a href="#home" class="nav-link text-gray-600 hover:text-gray-800 active">Home</a>
-                    <a href="#about" class="nav-link text-gray-600 hover:text-gray-800">About</a>
-                    <a href="#portfolio" class="nav-link text-gray-600 hover:text-gray-800">Portfolio</a>
-                    <a href="#skills" class="nav-link text-gray-600 hover:text-gray-800">Skills</a>
-                    <a href="#contact" class="nav-link text-gray-600 hover:text-gray-800">Contact</a>
-                </div>
-                <button class="md:hidden text-gray-600" onclick="toggleMobileMenu()">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                    </svg>
-                </button>
-            </div>
-            <div id="mobileMenu" class="hidden md:hidden mt-4 space-y-2">
-                <a href="#home" class="block text-gray-600 hover:text-gray-800 py-2">Home</a>
-                <a href="#about" class="block text-gray-600 hover:text-gray-800 py-2">About</a>
-                <a href="#portfolio" class="block text-gray-600 hover:text-gray-800 py-2">Portfolio</a>
-                <a href="#skills" class="block text-gray-600 hover:text-gray-800 py-2">Skills</a>
-                <a href="#contact" class="block text-gray-600 hover:text-gray-800 py-2">Contact</a>
-            </div>
-        </div>
-    </nav>
+<style>
+    *{
+        margin: 0;
+        padding: 0;
+        box-sizing: inherit;
 
-    <!-- Hero Section -->
-    <section id="home" class="gradient-bg min-h-screen flex items-center justify-center text-white">
-        <div class="text-center px-6 fade-in">
-            <div class="w-32 h-32 mx-auto mb-8 rounded-full bg-white/20 flex items-center justify-center text-6xl">
-                👨‍💻
-            </div>
-            <h1 class="text-5xl md:text-7xl font-bold mb-6">Alex Johnson</h1>
-            <p class="text-xl md:text-2xl mb-8 text-white/90">Full Stack Developer & UI/UX Designer</p>
-            <div class="space-x-4">
-                <button onclick="scrollToSection('portfolio')" class="bg-white text-purple-600 px-8 py-3 rounded-full font-semibold hover:bg-gray-100 transition duration-300">
-                    View My Work
-                </button>
-                <button onclick="scrollToSection('contact')" class="border-2 border-white text-white px-8 py-3 rounded-full font-semibold hover:bg-white hover:text-purple-600 transition duration-300">
-                    Get In Touch
-                </button>
-            </div>
-        </div>
-    </section>
+    }
+    html{
+        font-size: 62.5%;
+        box-sizing: border-box;
+    }
+    body{
+        font-family:  sans-serif;
+       color: rgb(241, 241, 241);
+       background-color: #222;
+       /*background-color:#60b347*/
 
-    <!-- About Section -->
-    <section id="about" class="py-20 bg-white">
-        <div class="max-w-6xl mx-auto px-6">
-            <div class="text-center mb-16 fade-in">
-                <h2 class="text-4xl font-bold text-gray-800 mb-4">About Me</h2>
-                <div class="w-20 h-1 bg-purple-600 mx-auto"></div>
-            </div>
-            <div class="grid md:grid-cols-2 gap-12 items-center">
-                <div class="fade-in">
-                    <div class="w-80 h-80 mx-auto bg-gradient-to-br from-purple-400 to-blue-500 rounded-2xl flex items-center justify-center text-8xl">
-                        🚀
-                    </div>
-                </div>
-                <div class="fade-in">
-                    <h3 class="text-2xl font-semibold text-gray-800 mb-6">Passionate Developer with 5+ Years Experience</h3>
-                    <p class="text-gray-600 mb-6 leading-relaxed">
-                        I'm a creative developer who loves turning ideas into beautiful, functional digital experiences. 
-                        With expertise in modern web technologies and a keen eye for design, I create solutions that 
-                        not only work flawlessly but also delight users.
-                    </p>
-                    <p class="text-gray-600 mb-8 leading-relaxed">
-                        When I'm not coding, you'll find me exploring new technologies, contributing to open source 
-                        projects, or sharing knowledge with the developer community.
-                    </p>
-                    <div class="grid grid-cols-2 gap-6">
-                        <div>
-                            <h4 class="font-semibold text-gray-800 mb-2">📧 Email</h4>
-                            <p class="text-gray-600">alex@example.com</p>
-                        </div>
-                        <div>
-                            <h4 class="font-semibold text-gray-800 mb-2">📍 Location</h4>
-                            <p class="text-gray-600">San Francisco, CA</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+    }
+    header{
+        position: relative;
+       display: flex;
+       align-items: center;
+        flex-direction: column;
+        height: 35vh;
+        border-bottom: 7px solid white;
+        
+        line-height: 90px;
+    }
+    main{
+        height: 65vh;
+        color: #eee;
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
 
-    <!-- Portfolio Section -->
-    <section id="portfolio" class="py-20 bg-gray-50">
-        <div class="max-w-6xl mx-auto px-6">
-            <div class="text-center mb-16 fade-in">
-                <h2 class="text-4xl font-bold text-gray-800 mb-4">My Portfolio</h2>
-                <div class="w-20 h-1 bg-purple-600 mx-auto mb-6"></div>
-                <p class="text-gray-600 max-w-2xl mx-auto">Here are some of my recent projects that showcase my skills and creativity</p>
-            </div>
-            
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Project 1 -->
-                <div class="card-hover bg-white rounded-xl overflow-hidden shadow-lg fade-in">
-                    <div class="h-48 bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-6xl">
-                        🛍️
-                    </div>
-                    <div class="p-6">
-                        <h3 class="text-xl font-semibold text-gray-800 mb-2">E-Commerce Platform</h3>
-                        <p class="text-gray-600 mb-4">Modern shopping experience with React and Node.js</p>
-                        <div class="flex flex-wrap gap-2 mb-4">
-                            <span class="px-3 py-1 bg-blue-100 text-blue-600 rounded-full text-sm">React</span>
-                            <span class="px-3 py-1 bg-green-100 text-green-600 rounded-full text-sm">Node.js</span>
-                            <span class="px-3 py-1 bg-purple-100 text-purple-600 rounded-full text-sm">MongoDB</span>
-                        </div>
-                        <div class="flex space-x-4">
-                            <button class="text-purple-600 hover:text-purple-800 font-medium">Live Demo</button>
-                            <button class="text-gray-600 hover:text-gray-800 font-medium">GitHub</button>
-                        </div>
-                    </div>
-                </div>
+    }
+    .left{
+        width: 52rem;
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+        align-items: center;
+    }
+    .right{
+      width: 52rem;
+       font-size: 20px;
+       font-weight: 700;
+       line-height: 50px;
+         
+    }
+    .btween{
+        text-align: end;
+         margin-right: 30px;
+         font-size: 22px;
+        align-self: flex-end;
+         position: absolute;
+         font-weight: 700;
+        top: 20px;
+    }
+    h1{
+        text-align: center;
+        font-size: 50px;
+        padding-top: 80px;
+        
+    }
+    .again{
+        margin-left: 30px;
+        align-self: flex-start;
+        padding:10px 20px;
+        font-size: 30px;
+        font-weight: 900;
+        position: absolute;
+         top: 20px;
+    }
+    .number{
+        
+        height: 10rem;
+        width: 15rem;
+        color: #222;
+        background-color: #eee;
+        font-size: 50px;
+        font-weight: 900;
+       text-align: center;
+       position: absolute;
+      top: 86%;
+       
+    }
+    input{
+        width: 200px;
+        height: 80px;
+        font-size: 55px;
+        text-align: center;
+        padding: 10px;
+        border: 3px rgb(255, 255, 255) solid;
+        background-color:transparent;
+        color: #eee;
+    }
+    .check{
+        width: 100px;
+        padding: 20px;
+        font-size: 20px;
+        font-weight: 600;
+    }
+</style>
+<body>
+    <header>
+        <h1>Guess My number !</h1>
+        <p class="btween">(between 1 and 20)</p>
+        <button class="btn again">Again!</button>
+        <div class="number">?</div>
+        
+    </header>
+    <main>
+        <section class="left">
+<input type="number" class="guess" max="20" min="1" maxlength="2">
+<button class="btn check">check!</button>
+        </section>
+      <section class="right">
+        <p class="message">Start guessing.. </p>
+        <p class="lable-score">score: <span class="score">20</span></p>
+    <p class="lable-highscore">Highscore: <span class="highscore">0</span></p>
 
-                <!-- Project 2 -->
-                <div class="card-hover bg-white rounded-xl overflow-hidden shadow-lg fade-in">
-                    <div class="h-48 bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center text-6xl">
-                        📱
-                    </div>
-                    <div class="p-6">
-                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Mobile Banking App</h3>
-                        <p class="text-gray-600 mb-4">Secure and intuitive banking experience</p>
-                        <div class="flex flex-wrap gap-2 mb-4">
-                            <span class="px-3 py-1 bg-blue-100 text-blue-600 rounded-full text-sm">React Native</span>
-                            <span class="px-3 py-1 bg-yellow-100 text-yellow-600 rounded-full text-sm">Firebase</span>
-                            <span class="px-3 py-1 bg-red-100 text-red-600 rounded-full text-sm">Redux</span>
-                        </div>
-                        <div class="flex space-x-4">
-                            <button class="text-purple-600 hover:text-purple-800 font-medium">Live Demo</button>
-                            <button class="text-gray-600 hover:text-gray-800 font-medium">GitHub</button>
-                        </div>
-                    </div>
-                </div>
+      </section>  
 
-                <!-- Project 3 -->
-                <div class="card-hover bg-white rounded-xl overflow-hidden shadow-lg fade-in">
-                    <div class="h-48 bg-gradient-to-br from-purple-400 to-pink-500 flex items-center justify-center text-6xl">
-                        🎨
-                    </div>
-                    <div class="p-6">
-                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Design System</h3>
-                        <p class="text-gray-600 mb-4">Comprehensive UI component library</p>
-                        <div class="flex flex-wrap gap-2 mb-4">
-                            <span class="px-3 py-1 bg-blue-100 text-blue-600 rounded-full text-sm">Vue.js</span>
-                            <span class="px-3 py-1 bg-green-100 text-green-600 rounded-full text-sm">Storybook</span>
-                            <span class="px-3 py-1 bg-purple-100 text-purple-600 rounded-full text-sm">Sass</span>
-                        </div>
-                        <div class="flex space-x-4">
-                            <button class="text-purple-600 hover:text-purple-800 font-medium">Live Demo</button>
-                            <button class="text-gray-600 hover:text-gray-800 font-medium">GitHub</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Project 4 -->
-                <div class="card-hover bg-white rounded-xl overflow-hidden shadow-lg fade-in">
-                    <div class="h-48 bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center text-6xl">
-                        📊
-                    </div>
-                    <div class="p-6">
-                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Analytics Dashboard</h3>
-                        <p class="text-gray-600 mb-4">Real-time data visualization platform</p>
-                        <div class="flex flex-wrap gap-2 mb-4">
-                            <span class="px-3 py-1 bg-blue-100 text-blue-600 rounded-full text-sm">Angular</span>
-                            <span class="px-3 py-1 bg-green-100 text-green-600 rounded-full text-sm">D3.js</span>
-                            <span class="px-3 py-1 bg-purple-100 text-purple-600 rounded-full text-sm">Python</span>
-                        </div>
-                        <div class="flex space-x-4">
-                            <button class="text-purple-600 hover:text-purple-800 font-medium">Live Demo</button>
-                            <button class="text-gray-600 hover:text-gray-800 font-medium">GitHub</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Project 5 -->
-                <div class="card-hover bg-white rounded-xl overflow-hidden shadow-lg fade-in">
-                    <div class="h-48 bg-gradient-to-br from-red-400 to-purple-500 flex items-center justify-center text-6xl">
-                        🎮
-                    </div>
-                    <div class="p-6">
-                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Gaming Platform</h3>
-                        <p class="text-gray-600 mb-4">Multiplayer gaming experience</p>
-                        <div class="flex flex-wrap gap-2 mb-4">
-                            <span class="px-3 py-1 bg-blue-100 text-blue-600 rounded-full text-sm">WebGL</span>
-                            <span class="px-3 py-1 bg-green-100 text-green-600 rounded-full text-sm">Socket.io</span>
-                            <span class="px-3 py-1 bg-purple-100 text-purple-600 rounded-full text-sm">Express</span>
-                        </div>
-                        <div class="flex space-x-4">
-                            <button class="text-purple-600 hover:text-purple-800 font-medium">Live Demo</button>
-                            <button class="text-gray-600 hover:text-gray-800 font-medium">GitHub</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Project 6 -->
-                <div class="card-hover bg-white rounded-xl overflow-hidden shadow-lg fade-in">
-                    <div class="h-48 bg-gradient-to-br from-teal-400 to-blue-500 flex items-center justify-center text-6xl">
-                        🌍
-                    </div>
-                    <div class="p-6">
-                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Travel Booking</h3>
-                        <p class="text-gray-600 mb-4">Complete travel planning solution</p>
-                        <div class="flex flex-wrap gap-2 mb-4">
-                            <span class="px-3 py-1 bg-blue-100 text-blue-600 rounded-full text-sm">Next.js</span>
-                            <span class="px-3 py-1 bg-green-100 text-green-600 rounded-full text-sm">Prisma</span>
-                            <span class="px-3 py-1 bg-purple-100 text-purple-600 rounded-full text-sm">PostgreSQL</span>
-                        </div>
-                        <div class="flex space-x-4">
-                            <button class="text-purple-600 hover:text-purple-800 font-medium">Live Demo</button>
-                            <button class="text-gray-600 hover:text-gray-800 font-medium">GitHub</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Skills Section -->
-    <section id="skills" class="py-20 bg-white">
-        <div class="max-w-6xl mx-auto px-6">
-            <div class="text-center mb-16 fade-in">
-                <h2 class="text-4xl font-bold text-gray-800 mb-4">Skills & Expertise</h2>
-                <div class="w-20 h-1 bg-purple-600 mx-auto"></div>
-            </div>
-            
-            <div class="grid md:grid-cols-2 gap-12">
-                <div class="fade-in">
-                    <h3 class="text-2xl font-semibold text-gray-800 mb-8">Technical Skills</h3>
-                    <div class="space-y-6">
-                        <div>
-                            <div class="flex justify-between mb-2">
-                                <span class="text-gray-700 font-medium">JavaScript / TypeScript</span>
-                                <span class="text-gray-600">95%</span>
-                            </div>
-                            <div class="w-full bg-gray-200 rounded-full h-2">
-                                <div class="skill-bar bg-purple-600 h-2 rounded-full" style="width: 0%" data-width="95%"></div>
-                            </div>
-                        </div>
-                        <div>
-                            <div class="flex justify-between mb-2">
-                                <span class="text-gray-700 font-medium">React / Next.js</span>
-                                <span class="text-gray-600">90%</span>
-                            </div>
-                            <div class="w-full bg-gray-200 rounded-full h-2">
-                                <div class="skill-bar bg-blue-600 h-2 rounded-full" style="width: 0%" data-width="90%"></div>
-                            </div>
-                        </div>
-                        <div>
-                            <div class="flex justify-between mb-2">
-                                <span class="text-gray-700 font-medium">Node.js / Express</span>
-                                <span class="text-gray-600">85%</span>
-                            </div>
-                            <div class="w-full bg-gray-200 rounded-full h-2">
-                                <div class="skill-bar bg-green-600 h-2 rounded-full" style="width: 0%" data-width="85%"></div>
-                            </div>
-                        </div>
-                        <div>
-                            <div class="flex justify-between mb-2">
-                                <span class="text-gray-700 font-medium">Python / Django</span>
-                                <span class="text-gray-600">80%</span>
-                            </div>
-                            <div class="w-full bg-gray-200 rounded-full h-2">
-                                <div class="skill-bar bg-yellow-600 h-2 rounded-full" style="width: 0%" data-width="80%"></div>
-                            </div>
-                        </div>
-                        <div>
-                            <div class="flex justify-between mb-2">
-                                <span class="text-gray-700 font-medium">Database Design</span>
-                                <span class="text-gray-600">88%</span>
-                            </div>
-                            <div class="w-full bg-gray-200 rounded-full h-2">
-                                <div class="skill-bar bg-red-600 h-2 rounded-full" style="width: 0%" data-width="88%"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="fade-in">
-                    <h3 class="text-2xl font-semibold text-gray-800 mb-8">Design & Tools</h3>
-                    <div class="grid grid-cols-2 gap-6">
-                        <div class="text-center p-6 bg-gray-50 rounded-xl">
-                            <div class="text-4xl mb-4">🎨</div>
-                            <h4 class="font-semibold text-gray-800 mb-2">UI/UX Design</h4>
-                            <p class="text-gray-600 text-sm">Figma, Adobe XD</p>
-                        </div>
-                        <div class="text-center p-6 bg-gray-50 rounded-xl">
-                            <div class="text-4xl mb-4">☁️</div>
-                            <h4 class="font-semibold text-gray-800 mb-2">Cloud Services</h4>
-                            <p class="text-gray-600 text-sm">AWS, Google Cloud</p>
-                        </div>
-                        <div class="text-center p-6 bg-gray-50 rounded-xl">
-                            <div class="text-4xl mb-4">🔧</div>
-                            <h4 class="font-semibold text-gray-800 mb-2">DevOps</h4>
-                            <p class="text-gray-600 text-sm">Docker, Kubernetes</p>
-                        </div>
-                        <div class="text-center p-6 bg-gray-50 rounded-xl">
-                            <div class="text-4xl mb-4">📱</div>
-                            <h4 class="font-semibold text-gray-800 mb-2">Mobile Dev</h4>
-                            <p class="text-gray-600 text-sm">React Native, Flutter</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Contact Section -->
-    <section id="contact" class="py-20 bg-gray-50">
-        <div class="max-w-4xl mx-auto px-6">
-            <div class="text-center mb-16 fade-in">
-                <h2 class="text-4xl font-bold text-gray-800 mb-4">Let's Work Together</h2>
-                <div class="w-20 h-1 bg-purple-600 mx-auto mb-6"></div>
-                <p class="text-gray-600 max-w-2xl mx-auto">Have a project in mind? I'd love to hear about it. Let's discuss how we can bring your ideas to life.</p>
-            </div>
-            
-            <div class="grid md:grid-cols-2 gap-12">
-                <div class="fade-in">
-                    <h3 class="text-2xl font-semibold text-gray-800 mb-6">Get In Touch</h3>
-                    <div class="space-y-6">
-                        <div class="flex items-center space-x-4">
-                            <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center text-purple-600 text-xl">
-                                📧
-                            </div>
-                            <div>
-                                <h4 class="font-semibold text-gray-800">Email</h4>
-                                <p class="text-gray-600">alex.johnson@example.com</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center space-x-4">
-                            <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center text-purple-600 text-xl">
-                                📱
-                            </div>
-                            <div>
-                                <h4 class="font-semibold text-gray-800">Phone</h4>
-                                <p class="text-gray-600">+1 (555) 123-4567</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center space-x-4">
-                            <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center text-purple-600 text-xl">
-                                📍
-                            </div>
-                            <div>
-                                <h4 class="font-semibold text-gray-800">Location</h4>
-                                <p class="text-gray-600">San Francisco, CA</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="mt-8">
-                        <h4 class="font-semibold text-gray-800 mb-4">Follow Me</h4>
-                        <div class="flex space-x-4">
-                            <button class="w-10 h-10 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition duration-300">
-                                📘
-                            </button>
-                            <button class="w-10 h-10 bg-blue-400 text-white rounded-full hover:bg-blue-500 transition duration-300">
-                                🐦
-                            </button>
-                            <button class="w-10 h-10 bg-blue-800 text-white rounded-full hover:bg-blue-900 transition duration-300">
-                                💼
-                            </button>
-                            <button class="w-10 h-10 bg-gray-800 text-white rounded-full hover:bg-gray-900 transition duration-300">
-                                🐙
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="fade-in">
-                    <form class="space-y-6" onsubmit="handleSubmit(event)">
-                        <div>
-                            <label class="block text-gray-700 font-medium mb-2">Name</label>
-                            <input type="text" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent outline-none transition duration-300" placeholder="Your Name">
-                        </div>
-                        <div>
-                            <label class="block text-gray-700 font-medium mb-2">Email</label>
-                            <input type="email" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent outline-none transition duration-300" placeholder="your@email.com">
-                        </div>
-                        <div>
-                            <label class="block text-gray-700 font-medium mb-2">Subject</label>
-                            <input type="text" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent outline-none transition duration-300" placeholder="Project Discussion">
-                        </div>
-                        <div>
-                            <label class="block text-gray-700 font-medium mb-2">Message</label>
-                            <textarea required rows="5" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent outline-none transition duration-300 resize-none" placeholder="Tell me about your project..."></textarea>
-                        </div>
-                        <button type="submit" class="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 transition duration-300">
-                            Send Message
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="bg-gray-800 text-white py-8">
-        <div class="max-w-6xl mx-auto px-6 text-center">
-            <p class="text-gray-400">&copy; 2024 Alex Johnson. All rights reserved. Built with passion and code.</p>
-        </div>
-    </footer>
-
-    <script>
-        // Smooth scrolling for navigation
-        function scrollToSection(sectionId) {
-            document.getElementById(sectionId).scrollIntoView({
-                behavior: 'smooth'
-            });
-        }
-
-        // Mobile menu toggle
-        function toggleMobileMenu() {
-            const menu = document.getElementById('mobileMenu');
-            menu.classList.toggle('hidden');
-        }
-
-        // Fade in animation on scroll
-        function handleScroll() {
-            const elements = document.querySelectorAll('.fade-in');
-            elements.forEach(element => {
-                const elementTop = element.getBoundingClientRect().top;
-                const elementVisible = 150;
-                
-                if (elementTop < window.innerHeight - elementVisible) {
-                    element.classList.add('visible');
-                }
-            });
-        }
-
-        // Animate skill bars
-        function animateSkillBars() {
-            const skillBars = document.querySelectorAll('.skill-bar');
-            skillBars.forEach(bar => {
-                const width = bar.getAttribute('data-width');
-                bar.style.width = width;
-            });
-        }
-
-        // Update active navigation link
-        function updateActiveNav() {
-            const sections = ['home', 'about', 'portfolio', 'skills', 'contact'];
-            const navLinks = document.querySelectorAll('.nav-link');
-            
-            sections.forEach((sectionId, index) => {
-                const section = document.getElementById(sectionId);
-                const rect = section.getBoundingClientRect();
-                
-                if (rect.top <= 100 && rect.bottom >= 100) {
-                    navLinks.forEach(link => link.classList.remove('active'));
-                    navLinks[index].classList.add('active');
-                }
-            });
-        }
-
-        // Form submission
-        function handleSubmit(event) {
-            event.preventDefault();
-            alert('Thank you for your message! This is a demo form. In a real portfolio, this would send your message.');
-        }
-
-        // Event listeners
-        window.addEventListener('scroll', () => {
-            handleScroll();
-            updateActiveNav();
-        });
-
-        window.addEventListener('load', () => {
-            handleScroll();
-            setTimeout(animateSkillBars, 1000);
-        });
-
-        // Navigation click handlers
-        document.querySelectorAll('.nav-link').forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const targetId = link.getAttribute('href').substring(1);
-                scrollToSection(targetId);
-            });
-        });
-
-        // Mobile menu click handlers
-        document.querySelectorAll('#mobileMenu a').forEach(link => {
-            link.addEventListener('click', () => {
-                document.getElementById('mobileMenu').classList.add('hidden');
-            });
-        });
-    </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9666df9ad252e16a',t:'MTc1MzczMTg5MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+    </main>
+    <script src="script.js"></script>
+</body>
 </html>
