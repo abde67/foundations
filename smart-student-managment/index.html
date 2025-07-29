@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Student Attendance Management System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-lg border-b-4 border-blue-500">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-6">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-blue-500 p-3 rounded-lg">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900">Smart Attendance</h1>
+                        <p class="text-sm text-gray-600">Student Management System</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="text-sm text-gray-600" id="currentDate"></span>
+                    <div class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
+                        Online
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Navigation Tabs -->
+        <div class="bg-white rounded-lg shadow-md mb-8">
+            <div class="border-b border-gray-200">
+                <nav class="flex space-x-8 px-6">
+                    <button onclick="showTab('attendance')" id="attendanceTab" class="tab-button py-4 px-2 border-b-2 border-blue-500 text-blue-600 font-medium">
+                        Mark Attendance
+                    </button>
+                    <button onclick="showTab('records')" id="recordsTab" class="tab-button py-4 px-2 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium">
+                        View Records
+                    </button>
+                    <button onclick="showTab('students')" id="studentsTab" class="tab-button py-4 px-2 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium">
+                        Manage Students
+                    </button>
+                    <button onclick="showTab('courses')" id="coursesTab" class="tab-button py-4 px-2 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium">
+                        Manage Courses
+                    </button>
+                    <button onclick="showTab('departments')" id="departmentsTab" class="tab-button py-4 px-2 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium">
+                        Manage Departments
+                    </button>
+                    <button onclick="showTab('analytics')" id="analyticsTab" class="tab-button py-4 px-2 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium">
+                        Analytics
+                    </button>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Attendance Tab -->
+        <div id="attendanceContent" class="tab-content fade-in">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Class Selection -->
+                <div class="lg:col-span-1">
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Select Class</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Department</label>
+                                <select id="departmentSelect" onchange="updateSections()" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option value="">Select Department</option>
+                                    <option value="computer_science">Computer Science</option>
+                                    <option value="it">Information Technology</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Section</label>
+                                <select id="sectionSelect" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option value="">Select Section</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Course</label>
+                                <select id="courseSelect" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option value="">Select Course</option>
+                                </select>
+                            </div>
+                            <button onclick="loadStudents()" class="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition duration-200">
+                                Load Students
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Student List -->
+                <div class="lg:col-span-2">
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-semibold text-gray-900">Student Attendance</h3>
+                            <div class="flex space-x-2">
+                                <button onclick="markAllPresent()" class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition duration-200 text-sm">
+                                    Mark All Present
+                                </button>
+                                <button onclick="saveAttendance()" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-200 text-sm">
+                                    Save Attendance
+                                </button>
+                            </div>
+                        </div>
+                        <div id="studentList" class="space-y-3">
+                            <p class="text-gray-500 text-center py-8">Please select a class to load students</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Records Tab -->
+        <div id="recordsContent" class="tab-content hidden">
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900">Attendance Records</h3>
+                    <div class="flex space-x-4">
+                        <input type="date" id="recordDate" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <select id="recordDepartment" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">All Departments</option>
+                            <option value="computer_science">Computer Science</option>
+                            <option value="it">Information Technology</option>
+                        </select>
+                        <select id="recordSection" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">All Sections</option>
+                        </select>
+                        <button onclick="filterRecords()" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-200">
+                            Filter
+                        </button>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Section</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Course</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recordsTable" class="bg-white divide-y divide-gray-200">
+                            <!-- Records will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Courses Tab -->
+        <div id="coursesContent" class="tab-content hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Add Course Form -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Add New Course</h3>
+                    <form id="addCourseForm" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Course Name</label>
+                            <input type="text" id="courseName" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Course Code</label>
+                            <input type="text" id="courseCode" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Department</label>
+                            <select id="courseDepartment" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                                <option value="">Select Department</option>
+                                <option value="computer_science">Computer Science</option>
+                                <option value="it">Information Technology</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Credits</label>
+                            <input type="number" id="courseCredits" min="1" max="6" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                            <textarea id="courseDescription" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                        </div>
+                        <button type="submit" class="w-full bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 transition duration-200">
+                            Add Course
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Course List -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">All Courses</h3>
+                    <div class="mb-4">
+                        <select id="filterDepartment" onchange="filterCourses()" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">All Departments</option>
+                            <option value="computer_science">Computer Science</option>
+                            <option value="it">Information Technology</option>
+                        </select>
+                    </div>
+                    <div class="space-y-3 max-h-96 overflow-y-auto" id="allCoursesList">
+                        <!-- Courses will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Departments Tab -->
+        <div id="departmentsContent" class="tab-content hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Add Department Form -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Add New Department</h3>
+                    <form id="addDepartmentForm" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Department Name</label>
+                            <input type="text" id="departmentName" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Department Code</label>
+                            <input type="text" id="departmentCode" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                            <textarea id="departmentDescription" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                        </div>
+                        <button type="submit" class="w-full bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 transition duration-200">
+                            Add Department
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Department List -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">All Departments</h3>
+                    <div class="space-y-3 max-h-96 overflow-y-auto" id="allDepartmentsList">
+                        <!-- Departments will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section Management -->
+            <div class="mt-8 bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Manage Sections</h3>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Add Section Form -->
+                    <div>
+                        <h4 class="text-md font-medium text-gray-800 mb-4">Add New Section</h4>
+                        <form id="addSectionForm" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Select Department</label>
+                                <select id="sectionDepartment" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                                    <option value="">Select Department</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Section Name</label>
+                                <input type="text" id="sectionName" placeholder="e.g., CS-D, IT-D" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            </div>
+                            <button type="submit" class="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition duration-200">
+                                Add Section
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Sections Display -->
+                    <div>
+                        <h4 class="text-md font-medium text-gray-800 mb-4">Current Sections</h4>
+                        <div class="space-y-4" id="sectionsDisplay">
+                            <!-- Sections will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Students Tab -->
+        <div id="studentsContent" class="tab-content hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Add Student Form -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Add New Student</h3>
+                    <form id="addStudentForm" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Student Name</label>
+                            <input type="text" id="studentName" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Student ID</label>
+                            <input type="text" id="studentId" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Department</label>
+                            <select id="studentDepartment" onchange="updateStudentSections()" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                                <option value="">Select Department</option>
+                                <option value="computer_science">Computer Science</option>
+                                <option value="it">Information Technology</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Section</label>
+                            <select id="studentSection" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                                <option value="">Select Section</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                            <input type="email" id="studentEmail" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Courses</label>
+                            <div class="grid grid-cols-1 gap-2 max-h-32 overflow-y-auto border border-gray-200 rounded-md p-2" id="studentCoursesList">
+                                <p class="text-sm text-gray-500">Select department first</p>
+                            </div>
+                        </div>
+                        <button type="submit" class="w-full bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 transition duration-200">
+                            Add Student
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Student List -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">All Students</h3>
+                    <div class="space-y-3 max-h-96 overflow-y-auto" id="allStudentsList">
+                        <!-- Students will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Tab -->
+        <div id="analyticsContent" class="tab-content hidden">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <!-- Stats Cards -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center">
+                        <div class="bg-blue-100 p-3 rounded-full">
+                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Total Students</p>
+                            <p class="text-2xl font-semibold text-gray-900" id="totalStudents">0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center">
+                        <div class="bg-green-100 p-3 rounded-full">
+                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Present Today</p>
+                            <p class="text-2xl font-semibold text-gray-900" id="presentToday">0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center">
+                        <div class="bg-red-100 p-3 rounded-full">
+                            <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Absent Today</p>
+                            <p class="text-2xl font-semibold text-gray-900" id="absentToday">0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center">
+                        <div class="bg-yellow-100 p-3 rounded-full">
+                            <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Attendance Rate</p>
+                            <p class="text-2xl font-semibold text-gray-900" id="attendanceRate">0%</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Department-wise Analytics -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                <h3 class="text-lg font-semibold text-gray-900 mb-6">Department & Section Analytics</h3>
+                <div id="departmentAnalytics" class="space-y-6">
+                    <!-- Department analytics will be populated here -->
+                </div>
+            </div>
+
+            <!-- Student Attendance Statistics -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Individual Student Statistics</h3>
+                    <div class="flex space-x-4">
+                        <select id="analyticsFilterDepartment" onchange="updateStudentStatistics()" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">All Departments</option>
+                        </select>
+                        <select id="analyticsFilterSection" onchange="updateStudentStatistics()" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">All Sections</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Section</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Classes</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Present</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Absent</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Attendance Rate</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentStatisticsTable" class="bg-white divide-y divide-gray-200">
+                            <!-- Student statistics will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Course-wise Attendance Records -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-6">Course-wise Attendance Records</h3>
+                <div id="courseAnalytics" class="space-y-4">
+                    <!-- Course analytics will be populated here -->
+                </div>
+            </div>
+        </div>
+        <script src="script.js"></script>
+    </body>
+</html>
