@@ -20,4 +20,15 @@ modal.classList.remove('hidden');
 
 
  btnlosemodal.addEventListener('click',closemodal);
- overlay.addEventListener('click',closemodal)
+ overlay.addEventListener('click',closemodal);
+
+ document.addEventListener('keydown', function(e){
+     if (e.key==='Escape'&&!modal.classList.contains('hidden')) {
+      
+        closemodal();
+      
+     }
+      
+     
+ });
+ 
