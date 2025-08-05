@@ -137,7 +137,7 @@ console.log(orderset.has('papaya'));
 
 orderset.add('garlik bread');
 orderset.add('garlik bread');
-orderset.delete('garlik bread')//will delet all garlick bread
+orderset.delete('garlik bread')//will delete all garlick bread
 
 console.log(orderset);
 
@@ -256,3 +256,24 @@ for (const [min,event]of gameEvents){
    const half =min<=45 ?'first':'second'
    console.log(`[${half}] ${min}: ${event}`);
 }
+
+
+const checmiddleseat =function(seat){
+ const s= seat.slice(-1);
+ if(s==='B'||s==='E'){
+  console.log('you got the middle seat')
+ }else{
+  console.log('you got lucky');
+ }
+}
+checmiddleseat('11B');
+checmiddleseat('23C');
+checmiddleseat('3E');
+     
+
+
+
+
+const pasanger='jona';
+
+console.log(pasanger.replaceAll('jona' ,' lala'));
