@@ -341,3 +341,21 @@ const flightdata=[543,'yalew debebe'];
 book.apply(ethiowings,flightdata);
 
 book.call(ethiowings,...flightdata)
+
+//bind method
+
+const bookew=book.bind(ethiowings)
+bookew(32,'sarah william');
+
+
+
+//with event listner
+lusthansa.plane=300;
+lusthansa.buyplanes=function(){
+  console.log(this);
+  this.plane++;
+  console.log(this.plane);
+
+};
+document.querySelector('.buy').addEventListener
+('click',lusthansa.buyplanes.bind(lusthansa));
