@@ -210,7 +210,7 @@ for(const [key,value]  of question){
   if(typeof key==='number') console.log(`answer ${key}: ${value}`);
 
 }
-// const answer =Number(prompt('your answer'));
+const answer =Number(/*prompt('your answer')*/);
 console.log(answer);
 
 
@@ -303,12 +303,16 @@ greetarr('hhi')('baba');
 const lusthansa={
   arline:'lusthansa',
   iatacod:'LH',
-  booking:[],
+  bookings:[],
   book(flightnum,name){
     console.log(`${name} booked a seat on ${this.arline} flight ${this.iatacod}${flightnum}`);
+ 
+    this.bookings.push({flight:`${this.iatacod}${flightnum}`,name});
+ 
   },
 
 };
 
 lusthansa.book(234,'abebech debebe');
- 
+ lusthansa.book(234,'lala land');
+ console.log(lusthansa);
