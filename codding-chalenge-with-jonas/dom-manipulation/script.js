@@ -210,7 +210,7 @@ for(const [key,value]  of question){
   if(typeof key==='number') console.log(`answer ${key}: ${value}`);
 
 }
-const answer =Number(prompt('your answer'));
+// const answer =Number(prompt('your answer'));
 console.log(answer);
 
 
@@ -277,3 +277,38 @@ checmiddleseat('3E');
 const pasanger='jona';
 
 console.log(pasanger.replaceAll('jona' ,' lala'));
+
+  
+//function that return the new function
+
+const greet=function(greeting){
+  return function(name){
+    console.log(`${greeting} ${name}`)
+  }
+};
+const greeterhey=greet('hey');
+greeterhey('janas')
+greeterhey('steven')
+
+
+//using arrow function
+
+const greetarr=greeting=>name=>{console.log(`${greeting} ${name}`)}
+
+greetarr('hhi')('baba');
+
+
+//this keyword
+
+const lusthansa={
+  arline:'lusthansa',
+  iatacod:'LH',
+  booking:[],
+  book(flightnum,name){
+    console.log(`${name} booked a seat on ${this.arline} flight ${this.iatacod}${flightnum}`);
+  },
+
+};
+
+lusthansa.book(234,'abebech debebe');
+ 
