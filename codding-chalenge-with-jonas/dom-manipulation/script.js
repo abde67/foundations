@@ -404,4 +404,14 @@ poll.displayResults.call({ answers: [1, 5, 3, 9, 6, 1] }, 'string');
 poll.displayResults.call({ answers: [1, 5, 3, 9, 6, 1] });
 
 
-  
+  //run once
+
+  const runOnce=function(){
+    console.log('this will never run again')
+  };
+//imidiatle invok
+ ( function (){
+     console.log('this will never run again')
+  } )();
+
+ ( ()=>  console.log('this will never run again'))(); 
