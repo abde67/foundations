@@ -316,3 +316,28 @@ const lusthansa={
 lusthansa.book(234,'abebech debebe');
  lusthansa.book(234,'lala land');
  console.log(lusthansa);
+
+
+ const ethiowings={
+  arline:'ethiowings',
+  iatacod:'EW',
+bookings:[],
+
+ }
+
+//we want to take the same method as the lusthansa
+ const book =lusthansa.book;
+//it donstn work lie this it will becon=m an ordinary function 
+// book(23,'sarah william');
+
+//we need to use the 'call' method
+book.call(ethiowings,23,'sarah william')
+book.call(lusthansa,234,'abebech debebe');
+
+
+//aply mathod
+
+const flightdata=[543,'yalew debebe'];
+book.apply(ethiowings,flightdata);
+
+book.call(ethiowings,...flightdata)
