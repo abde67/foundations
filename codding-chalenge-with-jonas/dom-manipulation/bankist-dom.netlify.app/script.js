@@ -174,3 +174,89 @@ const imgObserver = new IntersectionObserver(loadImg, {
 imgTargets.forEach(img => imgObserver.observe(img));
 
 
+
+const slides = document.querySelectorAll(".slide");
+const btnLeft = document.querySelector(".slider__btn--left");
+const btnRight = document.querySelector(".slider__btn--right");
+const dotContainer = document.querySelector(".dots");
+
+let curSlide = 0;
+const maxSlide = slides.length;
+
+const createDots = () => {
+  slides.forEach((s, i) => {
+    dotContainer.insertAdjacentHTML(
+      "beforeend",
+      `<button class="dots__dot" data-slide="${i}"></button>`
+    );
+  });
+};
+
+const activateDot = (dot) => {
+  const dots = document.querySelectorAll(".dots__dot");
+  dots.forEach((d) => d.classList.remove("dots__dot--active"));
+  document
+    .querySelector(`.dots__dot[data-slide="${dot}"]`)
+    .classList.add("dots__dot--active");
+};
+
+const goToSlide = (slide) => {
+  slides.forEach(
+    (s, i) => (s.style.transform = `translateX(${100 * (i - slide)}%)`)
+  );
+};
+
+const prevSlide = () => {
+  if (curSlide === 0) {
+    curSlide = maxSlide - 1;
+  } else {
+    curSlide--;
+  }
+  goToSlide(curSlide);
+  activateDot(curSlide);
+};
+
+const nextSlide = () => {
+  if (curSlide === maxSlide - 1) {
+    curSlide = 0;
+  } else {
+    curSlide++;
+  }
+  goToSlide(curSlide);
+  activateDot(curSlide);
+};
+
+btnLeft.addEventListener("click", prevSlide);
+btnRight.addEventListener("click", nextSlide);
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "ArrowLeft") prevSlide();
+  if (e.key === "ArrowRight") nextSlide();
+});
+
+dotContainer.addEventListener("click", (e) => {
+  console.log(e.target);
+  // 1.
+  // if (e.target.classList.contains('dots__dot')) {
+
+  // 2.
+  // If we need to do more complex matching, we can use MATCHES instead, which tests if a certain element WOULD BE selected by a certain selector. The selector has the exact same form as in querySelector or in CSS
+
+  // TODO classList NOT necessary?!
+  if (e.target.matches(".dots__dot")) {
+    const { slide } = e.target.dataset; // Destructuring
+    goToSlide(slide);
+    activateDot(slide);
+  }
+});
+
+// Go to next slide every 10 seconds
+// setInterval(nextSlide, 10000);
+
+const init = () => {
+  goToSlide(0);
+  createDots();
+  activateDot(0);
+};
+init();
+
