@@ -88,7 +88,7 @@ class EVCl extends CarCl {
 
 const rivian = new EVCl('Rivian', 120, 23);
 console.log(rivian);
-// console.log(rivian.#charge);
+// console.log(rivian.#charge); it is not gonna work out b/c charge is a privat filed
 
 
 rivian.accelerate().accelerate().accelerate().brake().chargeBattery(50).accelerate();
