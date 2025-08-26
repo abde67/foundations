@@ -91,6 +91,8 @@ const renderCountry = function (data, className = '') {
 // getCountryAndNeighbour('portugal');
 
 
+/*
+
 
 const request=fetch('https://restcountries.com/v2/name/portugal');
 console.log(request);
@@ -115,4 +117,72 @@ const getCountryData=function(country){
 
 btn.addEventListener('click',function(){
 getCountryData('usa')
-})
+})*/
+
+/*
+  const lotteryPromise= new Promise(function(resolve,reject){
+  if(Math.random()>=0.5){
+    resolve('you win')
+  }else{
+    reject( new Error('u lost your  mney'))
+  }
+  
+});
+lotteryPromise.then(res=>console.log(res)).catch(err=>console.log(err))
+
+const wait =function(seconds){
+  return new Promise(function(resolve){
+    setTimeout(resolve,seconds*1000);
+  })
+};
+
+wait(2).then(()=>{
+  console.log('i wait 2 seconds')
+  return wait(1);
+
+}).then(()=>console.log('i waited 1 second'))
+*/
+const wait =function(seconds){
+  return new Promise(function(resolve){
+    setTimeout(resolve,seconds*1000);
+  })
+};
+const imgContainer = document.querySelector('.images');
+
+const createImage = function (imgPath) {
+  return new Promise(function (resolve, reject) {
+    const img = document.createElement('img');
+    img.src = imgPath;
+
+    img.addEventListener('load', function () {
+      imgContainer.append(img);
+      resolve(img);
+    });
+
+    img.addEventListener('error', function () {
+      reject(new Error('Image not found'));
+    });
+  });
+};
+
+let currentImg;
+
+createImage('image/hello world.jpeg')
+  .then(img => {
+    currentImg = img;
+    console.log('Image 1 loaded');
+    return wait(2);
+  })
+  .then(() => {
+    currentImg.style.display = 'none';
+    return createImage('image/img2.jpeg');
+  })
+  .then(img => {
+    currentImg = img;
+    console.log('Image 2 loaded');
+    return wait(2);
+  })
+  .then(() => {
+    currentImg.style.display = 'none';
+  })
+  .catch(err => console.error(err));
