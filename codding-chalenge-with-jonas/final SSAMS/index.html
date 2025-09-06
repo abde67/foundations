@@ -1,0 +1,1014 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Attendance Management System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .fade-in { animation: fadeIn 0.3s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .slide-in { animation: slideIn 0.3s ease-out; }
+        @keyframes slideIn { from { transform: translateX(-20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <!-- Login Screen -->
+    <div id="loginScreen" class="min-h-screen flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md fade-in">
+            <div class="text-center mb-8">
+                <div class="bg-gradient-to-r from-blue-600 to-indigo-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                    </svg>
+                </div>
+                <h1 class="text-3xl font-bold text-gray-800 mb-2">Smart Attendance</h1>
+                <p class="text-gray-600">Management System</p>
+            </div>
+            
+            <form id="loginForm" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Username</label>
+                    <input type="text" id="username" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" placeholder="Enter your username" required>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                    <input type="password" id="password" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" placeholder="Enter your password" required>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Role</label>
+                    <select id="role" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                        <option value="admin">Admin</option>
+                        <option value="teacher">Teacher</option>
+                        <option value="student">Student</option>
+                    </select>
+                </div>
+                
+                <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-200 shadow-lg">
+                    Sign In
+                </button>
+            </form>
+            
+            <div class="mt-6 text-center text-sm text-gray-600">
+                <p>Demo Credentials:</p>
+                <p><strong>Admin:</strong> admin/admin123</p>
+                <p><strong>Teacher:</strong> teacher/teach123</p>
+                <p><strong>Student:</strong> student/stud123</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div id="dashboard" class="hidden min-h-screen">
+        <!-- Header -->
+        <header class="bg-white shadow-sm border-b border-gray-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center py-4">
+                    <div class="flex items-center">
+                        <div class="bg-gradient-to-r from-blue-600 to-indigo-600 w-10 h-10 rounded-lg flex items-center justify-center mr-3">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                            </svg>
+                        </div>
+                        <h1 class="text-2xl font-bold text-gray-800">Smart Attendance</h1>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <span id="userWelcome" class="text-gray-600 font-medium"></span>
+                        <button onclick="logout()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors">
+                            Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="bg-gray-50 border-b border-gray-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div id="navTabs" class="flex space-x-8 py-4">
+                    <!-- Navigation tabs will be populated based on role -->
+                </div>
+            </div>
+        </nav>
+
+        <!-- Content Area -->
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div id="contentArea">
+                <!-- Content will be loaded here based on selected tab -->
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Sample data structure
+        let currentUser = null;
+        let students = [
+            { id: 1, name: 'Alice Johnson', email: 'alice@school.edu', course: 'Computer Science', year: '2nd' },
+            { id: 2, name: 'Bob Smith', email: 'bob@school.edu', course: 'Mathematics', year: '3rd' },
+            { id: 3, name: 'Carol Davis', email: 'carol@school.edu', course: 'Computer Science', year: '1st' },
+            { id: 4, name: 'David Wilson', email: 'david@school.edu', course: 'Physics', year: '2nd' }
+        ];
+
+        let teachers = [
+            { id: 1, name: 'Dr. Sarah Brown', email: 'sarah@school.edu', department: 'Computer Science' },
+            { id: 2, name: 'Prof. Michael Lee', email: 'michael@school.edu', department: 'Mathematics' },
+            { id: 3, name: 'Dr. Emma Taylor', email: 'emma@school.edu', department: 'Physics' }
+        ];
+
+        let courses = [
+            { id: 1, name: 'Data Structures', code: 'CS201', teacher: 'Dr. Sarah Brown', students: [1, 3] },
+            { id: 2, name: 'Calculus II', code: 'MATH202', teacher: 'Prof. Michael Lee', students: [2] },
+            { id: 3, name: 'Quantum Physics', code: 'PHY301', teacher: 'Dr. Emma Taylor', students: [4] }
+        ];
+
+        let attendanceRecords = [
+            { studentId: 1, courseId: 1, date: '2024-01-15', status: 'Present' },
+            { studentId: 1, courseId: 1, date: '2024-01-16', status: 'Present' },
+            { studentId: 1, courseId: 1, date: '2024-01-17', status: 'Absent' },
+            { studentId: 3, courseId: 1, date: '2024-01-15', status: 'Late' },
+            { studentId: 3, courseId: 1, date: '2024-01-16', status: 'Present' },
+            { studentId: 2, courseId: 2, date: '2024-01-15', status: 'Present' },
+            { studentId: 4, courseId: 3, date: '2024-01-15', status: 'Present' }
+        ];
+
+        // Login functionality
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const role = document.getElementById('role').value;
+
+            // Simple authentication check
+            const validCredentials = {
+                'admin': 'admin123',
+                'teacher': 'teach123',
+                'student': 'stud123'
+            };
+
+            if (validCredentials[role] === password && username === role) {
+                currentUser = { username, role };
+                showDashboard();
+            } else {
+                alert('Invalid credentials! Please use the demo credentials provided.');
+            }
+        });
+
+        function showDashboard() {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+            document.getElementById('userWelcome').textContent = `Welcome, ${currentUser.username}!`;
+            
+            setupNavigation();
+            loadDefaultContent();
+        }
+
+        function setupNavigation() {
+            const navTabs = document.getElementById('navTabs');
+            let tabs = [];
+
+            if (currentUser.role === 'admin') {
+                tabs = [
+                    { id: 'students', label: 'Manage Students', icon: '👥' },
+                    { id: 'teachers', label: 'Manage Teachers', icon: '👨‍🏫' },
+                    { id: 'courses', label: 'Manage Courses', icon: '📚' },
+                    { id: 'reports', label: 'Reports', icon: '📊' }
+                ];
+            } else if (currentUser.role === 'teacher') {
+                tabs = [
+                    { id: 'attendance', label: 'Mark Attendance', icon: '✅' },
+                    { id: 'view-attendance', label: 'View Records', icon: '📋' },
+                    { id: 'teacher-reports', label: 'Generate Reports', icon: '📈' }
+                ];
+            } else if (currentUser.role === 'student') {
+                tabs = [
+                    { id: 'my-attendance', label: 'My Attendance', icon: '📅' },
+                    { id: 'attendance-summary', label: 'Summary', icon: '📊' }
+                ];
+            }
+
+            navTabs.innerHTML = tabs.map(tab => `
+                <button onclick="loadContent('${tab.id}')" class="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-blue-100 transition-colors tab-button" data-tab="${tab.id}">
+                    <span>${tab.icon}</span>
+                    <span class="font-medium">${tab.label}</span>
+                </button>
+            `).join('');
+
+            // Set first tab as active
+            if (tabs.length > 0) {
+                loadContent(tabs[0].id);
+            }
+        }
+
+        function loadContent(tabId) {
+            // Update active tab
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('bg-blue-100', 'text-blue-700');
+            });
+            document.querySelector(`[data-tab="${tabId}"]`).classList.add('bg-blue-100', 'text-blue-700');
+
+            const contentArea = document.getElementById('contentArea');
+            
+            switch(tabId) {
+                case 'students':
+                    contentArea.innerHTML = getStudentsManagementHTML();
+                    break;
+                case 'teachers':
+                    contentArea.innerHTML = getTeachersManagementHTML();
+                    break;
+                case 'courses':
+                    contentArea.innerHTML = getCoursesManagementHTML();
+                    break;
+                case 'reports':
+                    contentArea.innerHTML = getAdminReportsHTML();
+                    break;
+                case 'attendance':
+                    contentArea.innerHTML = getMarkAttendanceHTML();
+                    break;
+                case 'view-attendance':
+                    contentArea.innerHTML = getViewAttendanceHTML();
+                    break;
+                case 'teacher-reports':
+                    contentArea.innerHTML = getTeacherReportsHTML();
+                    break;
+                case 'my-attendance':
+                    contentArea.innerHTML = getMyAttendanceHTML();
+                    break;
+                case 'attendance-summary':
+                    contentArea.innerHTML = getAttendanceSummaryHTML();
+                    break;
+            }
+        }
+
+        function loadDefaultContent() {
+            const firstTab = document.querySelector('.tab-button');
+            if (firstTab) {
+                firstTab.click();
+            }
+        }
+
+        // Admin Functions
+        function getStudentsManagementHTML() {
+            return `
+                <div class="fade-in">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-gray-800">Manage Students</h2>
+                        <button onclick="showAddStudentModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
+                            + Add Student
+                        </button>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                        <table class="w-full">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Course</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Year</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                ${students.map(student => `
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">${student.name}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-gray-500">${student.email}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-gray-500">${student.course}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-gray-500">${student.year}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                            <button onclick="editStudent(${student.id})" class="text-blue-600 hover:text-blue-900 mr-3">Edit</button>
+                                            <button onclick="deleteStudent(${student.id})" class="text-red-600 hover:text-red-900">Delete</button>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getTeachersManagementHTML() {
+            return `
+                <div class="fade-in">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-gray-800">Manage Teachers</h2>
+                        <button onclick="showAddTeacherModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
+                            + Add Teacher
+                        </button>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                        <table class="w-full">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                ${teachers.map(teacher => `
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">${teacher.name}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-gray-500">${teacher.email}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-gray-500">${teacher.department}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                            <button onclick="editTeacher(${teacher.id})" class="text-blue-600 hover:text-blue-900 mr-3">Edit</button>
+                                            <button onclick="deleteTeacher(${teacher.id})" class="text-red-600 hover:text-red-900">Delete</button>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getCoursesManagementHTML() {
+            return `
+                <div class="fade-in">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-gray-800">Manage Courses</h2>
+                        <button onclick="showAddCourseModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
+                            + Add Course
+                        </button>
+                    </div>
+                    
+                    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                        ${courses.map(course => `
+                            <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200 hover:shadow-md transition-shadow">
+                                <div class="flex justify-between items-start mb-4">
+                                    <div>
+                                        <h3 class="text-lg font-semibold text-gray-800">${course.name}</h3>
+                                        <p class="text-sm text-gray-500">${course.code}</p>
+                                    </div>
+                                    <div class="flex space-x-2">
+                                        <button onclick="editCourse(${course.id})" class="text-blue-600 hover:text-blue-800">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                            </svg>
+                                        </button>
+                                        <button onclick="deleteCourse(${course.id})" class="text-red-600 hover:text-red-800">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                                <p class="text-sm text-gray-600 mb-3">👨‍🏫 ${course.teacher}</p>
+                                <p class="text-sm text-gray-600">👥 ${course.students.length} students enrolled</p>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function getAdminReportsHTML() {
+            const totalStudents = students.length;
+            const totalTeachers = teachers.length;
+            const totalCourses = courses.length;
+            const totalAttendanceRecords = attendanceRecords.length;
+
+            return `
+                <div class="fade-in">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">System Reports</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+                            <div class="flex items-center">
+                                <div class="bg-blue-100 p-3 rounded-full">
+                                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                                    </svg>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-500">Total Students</p>
+                                    <p class="text-2xl font-bold text-gray-900">${totalStudents}</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+                            <div class="flex items-center">
+                                <div class="bg-green-100 p-3 rounded-full">
+                                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                    </svg>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-500">Total Teachers</p>
+                                    <p class="text-2xl font-bold text-gray-900">${totalTeachers}</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+                            <div class="flex items-center">
+                                <div class="bg-purple-100 p-3 rounded-full">
+                                    <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                                    </svg>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-500">Total Courses</p>
+                                    <p class="text-2xl font-bold text-gray-900">${totalCourses}</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+                            <div class="flex items-center">
+                                <div class="bg-yellow-100 p-3 rounded-full">
+                                    <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                    </svg>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-500">Attendance Records</p>
+                                    <p class="text-2xl font-bold text-gray-900">${totalAttendanceRecords}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Recent Attendance Activity</h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Student</th>
+                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Course</th>
+                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-200">
+                                    ${attendanceRecords.slice(-5).map(record => {
+                                        const student = students.find(s => s.id === record.studentId);
+                                        const course = courses.find(c => c.id === record.courseId);
+                                        const statusColor = record.status === 'Present' ? 'text-green-600 bg-green-100' : 
+                                                          record.status === 'Late' ? 'text-yellow-600 bg-yellow-100' : 'text-red-600 bg-red-100';
+                                        return `
+                                            <tr>
+                                                <td class="px-4 py-2 text-sm text-gray-900">${student?.name || 'Unknown'}</td>
+                                                <td class="px-4 py-2 text-sm text-gray-500">${course?.name || 'Unknown'}</td>
+                                                <td class="px-4 py-2 text-sm text-gray-500">${record.date}</td>
+                                                <td class="px-4 py-2">
+                                                    <span class="px-2 py-1 text-xs font-medium rounded-full ${statusColor}">
+                                                        ${record.status}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        `;
+                                    }).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Teacher Functions
+        function getMarkAttendanceHTML() {
+            return `
+                <div class="fade-in">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">Mark Attendance</h2>
+                    
+                    <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Select Course</label>
+                                <select id="courseSelect" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                    <option value="">Choose a course...</option>
+                                    ${courses.map(course => `<option value="${course.id}">${course.name} (${course.code})</option>`).join('')}
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Date</label>
+                                <input type="date" id="attendanceDate" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" value="${new Date().toISOString().split('T')[0]}">
+                            </div>
+                            <div class="flex items-end">
+                                <button onclick="loadStudentsForAttendance()" class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
+                                    Load Students
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="attendanceForm" class="hidden bg-white rounded-lg shadow-sm p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-semibold text-gray-800">Mark Attendance</h3>
+                            <button onclick="saveAttendance()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors">
+                                Save Attendance
+                            </button>
+                        </div>
+                        <div id="studentsList"></div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function loadStudentsForAttendance() {
+            const courseId = parseInt(document.getElementById('courseSelect').value);
+            const date = document.getElementById('attendanceDate').value;
+            
+            if (!courseId || !date) {
+                alert('Please select a course and date');
+                return;
+            }
+            
+            const course = courses.find(c => c.id === courseId);
+            const courseStudents = students.filter(s => course.students.includes(s.id));
+            
+            const studentsListHTML = courseStudents.map(student => `
+                <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg mb-3">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center mr-3">
+                            <span class="text-sm font-medium text-gray-600">${student.name.split(' ').map(n => n[0]).join('')}</span>
+                        </div>
+                        <div>
+                            <p class="font-medium text-gray-900">${student.name}</p>
+                            <p class="text-sm text-gray-500">${student.email}</p>
+                        </div>
+                    </div>
+                    <div class="flex space-x-2">
+                        <label class="flex items-center">
+                            <input type="radio" name="attendance_${student.id}" value="Present" class="mr-2 text-green-600">
+                            <span class="text-sm text-green-600">Present</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="radio" name="attendance_${student.id}" value="Late" class="mr-2 text-yellow-600">
+                            <span class="text-sm text-yellow-600">Late</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="radio" name="attendance_${student.id}" value="Absent" class="mr-2 text-red-600">
+                            <span class="text-sm text-red-600">Absent</span>
+                        </label>
+                    </div>
+                </div>
+            `).join('');
+            
+            document.getElementById('studentsList').innerHTML = studentsListHTML;
+            document.getElementById('attendanceForm').classList.remove('hidden');
+        }
+
+        function saveAttendance() {
+            const courseId = parseInt(document.getElementById('courseSelect').value);
+            const date = document.getElementById('attendanceDate').value;
+            const course = courses.find(c => c.id === courseId);
+            
+            course.students.forEach(studentId => {
+                const statusInputs = document.getElementsByName(`attendance_${studentId}`);
+                const selectedStatus = Array.from(statusInputs).find(input => input.checked);
+                
+                if (selectedStatus) {
+                    // Remove existing record for this date if any
+                    attendanceRecords = attendanceRecords.filter(record => 
+                        !(record.studentId === studentId && record.courseId === courseId && record.date === date)
+                    );
+                    
+                    // Add new record
+                    attendanceRecords.push({
+                        studentId: studentId,
+                        courseId: courseId,
+                        date: date,
+                        status: selectedStatus.value
+                    });
+                }
+            });
+            
+            alert('Attendance saved successfully!');
+            document.getElementById('attendanceForm').classList.add('hidden');
+            document.getElementById('courseSelect').value = '';
+        }
+
+        function getViewAttendanceHTML() {
+            return `
+                <div class="fade-in">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">View Attendance Records</h2>
+                    
+                    <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Filter by Course</label>
+                                <select id="filterCourse" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                    <option value="">All Courses</option>
+                                    ${courses.map(course => `<option value="${course.id}">${course.name}</option>`).join('')}
+                                </select>
+                            </div>
+                            <div class="flex items-end">
+                                <button onclick="filterAttendanceRecords()" class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
+                                    Filter Records
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="attendanceRecords" class="bg-white rounded-lg shadow-sm overflow-hidden">
+                        ${getAttendanceRecordsTable()}
+                    </div>
+                </div>
+            `;
+        }
+
+        function getAttendanceRecordsTable(filteredRecords = attendanceRecords) {
+            return `
+                <table class="w-full">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Course</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        ${filteredRecords.map(record => {
+                            const student = students.find(s => s.id === record.studentId);
+                            const course = courses.find(c => c.id === record.courseId);
+                            const statusColor = record.status === 'Present' ? 'text-green-600 bg-green-100' : 
+                                              record.status === 'Late' ? 'text-yellow-600 bg-yellow-100' : 'text-red-600 bg-red-100';
+                            return `
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">${student?.name || 'Unknown'}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">${course?.name || 'Unknown'}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">${record.date}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 py-1 text-xs font-medium rounded-full ${statusColor}">
+                                            ${record.status}
+                                        </span>
+                                    </td>
+                                </tr>
+                            `;
+                        }).join('')}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        function filterAttendanceRecords() {
+            const courseId = document.getElementById('filterCourse').value;
+            let filteredRecords = attendanceRecords;
+            
+            if (courseId) {
+                filteredRecords = attendanceRecords.filter(record => record.courseId === parseInt(courseId));
+            }
+            
+            document.getElementById('attendanceRecords').innerHTML = getAttendanceRecordsTable(filteredRecords);
+        }
+
+        function getTeacherReportsHTML() {
+            return `
+                <div class="fade-in">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">Generate Reports</h2>
+                    
+                    <div class="grid gap-6 md:grid-cols-2">
+                        <div class="bg-white rounded-lg shadow-sm p-6">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Course Attendance Report</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Select Course</label>
+                                    <select id="reportCourse" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                        <option value="">Choose a course...</option>
+                                        ${courses.map(course => `<option value="${course.id}">${course.name}</option>`).join('')}
+                                    </select>
+                                </div>
+                                <button onclick="generateCourseReport()" class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
+                                    Generate Report
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg shadow-sm p-6">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Student Attendance Report</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Select Student</label>
+                                    <select id="reportStudent" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                        <option value="">Choose a student...</option>
+                                        ${students.map(student => `<option value="${student.id}">${student.name}</option>`).join('')}
+                                    </select>
+                                </div>
+                                <button onclick="generateStudentReport()" class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors">
+                                    Generate Report
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="reportResults" class="mt-6"></div>
+                </div>
+            `;
+        }
+
+        function generateCourseReport() {
+            const courseId = parseInt(document.getElementById('reportCourse').value);
+            if (!courseId) {
+                alert('Please select a course');
+                return;
+            }
+            
+            const course = courses.find(c => c.id === courseId);
+            const courseRecords = attendanceRecords.filter(r => r.courseId === courseId);
+            const courseStudents = students.filter(s => course.students.includes(s.id));
+            
+            const reportHTML = `
+                <div class="bg-white rounded-lg shadow-sm p-6 fade-in">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Attendance Report: ${course.name}</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Student</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Total Classes</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Present</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Late</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Absent</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Percentage</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                ${courseStudents.map(student => {
+                                    const studentRecords = courseRecords.filter(r => r.studentId === student.id);
+                                    const present = studentRecords.filter(r => r.status === 'Present').length;
+                                    const late = studentRecords.filter(r => r.status === 'Late').length;
+                                    const absent = studentRecords.filter(r => r.status === 'Absent').length;
+                                    const total = studentRecords.length;
+                                    const percentage = total > 0 ? Math.round(((present + late * 0.5) / total) * 100) : 0;
+                                    const percentageColor = percentage >= 75 ? 'text-green-600' : percentage >= 60 ? 'text-yellow-600' : 'text-red-600';
+                                    
+                                    return `
+                                        <tr>
+                                            <td class="px-4 py-2 text-sm font-medium text-gray-900">${student.name}</td>
+                                            <td class="px-4 py-2 text-sm text-gray-500">${total}</td>
+                                            <td class="px-4 py-2 text-sm text-green-600">${present}</td>
+                                            <td class="px-4 py-2 text-sm text-yellow-600">${late}</td>
+                                            <td class="px-4 py-2 text-sm text-red-600">${absent}</td>
+                                            <td class="px-4 py-2 text-sm font-medium ${percentageColor}">${percentage}%</td>
+                                        </tr>
+                                    `;
+                                }).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="mt-4 flex justify-end">
+                        <button onclick="downloadReport('course', ${courseId})" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
+                            📥 Download Report
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('reportResults').innerHTML = reportHTML;
+        }
+
+        function generateStudentReport() {
+            const studentId = parseInt(document.getElementById('reportStudent').value);
+            if (!studentId) {
+                alert('Please select a student');
+                return;
+            }
+            
+            const student = students.find(s => s.id === studentId);
+            const studentRecords = attendanceRecords.filter(r => r.studentId === studentId);
+            
+            // Group by course
+            const courseStats = {};
+            studentRecords.forEach(record => {
+                if (!courseStats[record.courseId]) {
+                    courseStats[record.courseId] = { present: 0, late: 0, absent: 0 };
+                }
+                courseStats[record.courseId][record.status.toLowerCase()]++;
+            });
+            
+            const reportHTML = `
+                <div class="bg-white rounded-lg shadow-sm p-6 fade-in">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Attendance Report: ${student.name}</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Course</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Present</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Late</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Absent</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Percentage</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                ${Object.entries(courseStats).map(([courseId, stats]) => {
+                                    const course = courses.find(c => c.id === parseInt(courseId));
+                                    const total = stats.present + stats.late + stats.absent;
+                                    const percentage = total > 0 ? Math.round(((stats.present + stats.late * 0.5) / total) * 100) : 0;
+                                    const percentageColor = percentage >= 75 ? 'text-green-600' : percentage >= 60 ? 'text-yellow-600' : 'text-red-600';
+                                    
+                                    return `
+                                        <tr>
+                                            <td class="px-4 py-2 text-sm font-medium text-gray-900">${course?.name || 'Unknown'}</td>
+                                            <td class="px-4 py-2 text-sm text-green-600">${stats.present}</td>
+                                            <td class="px-4 py-2 text-sm text-yellow-600">${stats.late}</td>
+                                            <td class="px-4 py-2 text-sm text-red-600">${stats.absent}</td>
+                                            <td class="px-4 py-2 text-sm font-medium ${percentageColor}">${percentage}%</td>
+                                        </tr>
+                                    `;
+                                }).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="mt-4 flex justify-end">
+                        <button onclick="downloadReport('student', ${studentId})" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors">
+                            📥 Download Report
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('reportResults').innerHTML = reportHTML;
+        }
+
+        // Student Functions
+        function getMyAttendanceHTML() {
+            // For demo, we'll show student ID 1's attendance
+            const studentId = 1;
+            const studentRecords = attendanceRecords.filter(r => r.studentId === studentId);
+            
+            return `
+                <div class="fade-in">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">My Attendance History</h2>
+                    
+                    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                        <table class="w-full">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Course</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                ${studentRecords.map(record => {
+                                    const course = courses.find(c => c.id === record.courseId);
+                                    const statusColor = record.status === 'Present' ? 'text-green-600 bg-green-100' : 
+                                                      record.status === 'Late' ? 'text-yellow-600 bg-yellow-100' : 'text-red-600 bg-red-100';
+                                    return `
+                                        <tr class="hover:bg-gray-50">
+                                            <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">${course?.name || 'Unknown'}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">${record.date}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="px-2 py-1 text-xs font-medium rounded-full ${statusColor}">
+                                                    ${record.status}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    `;
+                                }).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getAttendanceSummaryHTML() {
+            // For demo, we'll show student ID 1's summary
+            const studentId = 1;
+            const studentRecords = attendanceRecords.filter(r => r.studentId === studentId);
+            
+            // Group by course
+            const courseStats = {};
+            studentRecords.forEach(record => {
+                if (!courseStats[record.courseId]) {
+                    courseStats[record.courseId] = { present: 0, late: 0, absent: 0 };
+                }
+                courseStats[record.courseId][record.status.toLowerCase()]++;
+            });
+            
+            return `
+                <div class="fade-in">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">Attendance Summary</h2>
+                    
+                    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-8">
+                        ${Object.entries(courseStats).map(([courseId, stats]) => {
+                            const course = courses.find(c => c.id === parseInt(courseId));
+                            const total = stats.present + stats.late + stats.absent;
+                            const percentage = total > 0 ? Math.round(((stats.present + stats.late * 0.5) / total) * 100) : 0;
+                            const percentageColor = percentage >= 75 ? 'text-green-600' : percentage >= 60 ? 'text-yellow-600' : 'text-red-600';
+                            
+                            return `
+                                <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+                                    <h3 class="text-lg font-semibold text-gray-800 mb-3">${course?.name || 'Unknown'}</h3>
+                                    <div class="space-y-2 mb-4">
+                                        <div class="flex justify-between">
+                                            <span class="text-sm text-gray-600">Present:</span>
+                                            <span class="text-sm font-medium text-green-600">${stats.present}</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-sm text-gray-600">Late:</span>
+                                            <span class="text-sm font-medium text-yellow-600">${stats.late}</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-sm text-gray-600">Absent:</span>
+                                            <span class="text-sm font-medium text-red-600">${stats.absent}</span>
+                                        </div>
+                                    </div>
+                                    <div class="border-t pt-3">
+                                        <div class="flex justify-between items-center">
+                                            <span class="text-sm font-medium text-gray-700">Attendance:</span>
+                                            <span class="text-lg font-bold ${percentageColor}">${percentage}%</span>
+                                        </div>
+                                        <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+                                            <div class="bg-blue-600 h-2 rounded-full transition-all duration-300" style="width: ${percentage}%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                    
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-semibold text-gray-800">Download My Attendance Report</h3>
+                            <button onclick="downloadStudentReport()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
+                                📥 Download Report
+                            </button>
+                        </div>
+                        <p class="text-gray-600">Get a comprehensive report of your attendance across all courses.</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Utility Functions
+        function downloadReport(type, id) {
+            alert(`Report download started! (This is a demo - in a real system, a PDF would be generated and downloaded)`);
+        }
+
+        function downloadStudentReport() {
+            alert(`Your attendance report download started! (This is a demo - in a real system, a PDF would be generated and downloaded)`);
+        }
+
+        function showAddStudentModal() {
+            alert('Add Student modal would open here (Demo functionality)');
+        }
+
+        function showAddTeacherModal() {
+            alert('Add Teacher modal would open here (Demo functionality)');
+        }
+
+        function showAddCourseModal() {
+            alert('Add Course modal would open here (Demo functionality)');
+        }
+
+        function editStudent(id) {
+            alert(`Edit student ${id} (Demo functionality)`);
+        }
+
+        function deleteStudent(id) {
+            if (confirm('Are you sure you want to delete this student?')) {
+                students = students.filter(s => s.id !== id);
+                loadContent('students');
+            }
+        }
+
+        function editTeacher(id) {
+            alert(`Edit teacher ${id} (Demo functionality)`);
+        }
+
+        function deleteTeacher(id) {
+            if (confirm('Are you sure you want to delete this teacher?')) {
+                teachers = teachers.filter(t => t.id !== id);
+                loadContent('teachers');
+            }
+        }
+
+        function editCourse(id) {
+            alert(`Edit course ${id} (Demo functionality)`);
+        }
+
+        function deleteCourse(id) {
+            if (confirm('Are you sure you want to delete this course?')) {
+                courses = courses.filter(c => c.id !== id);
+                loadContent('courses');
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            document.getElementById('dashboard').classList.add('hidden');
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('loginForm').reset();
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97b058b4a3f9ea61',t:'MTc1NzE4NjY2NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
