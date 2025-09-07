@@ -1,0 +1,2831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Attendance Management System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .fade-in { animation: fadeIn 0.3s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .slide-in { animation: slideIn 0.3s ease-out; }
+        @keyframes slideIn { from { transform: translateX(-100%); } to { transform: translateX(0); } }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <!-- Login Screen -->
+    <div id="loginScreen" class="min-h-screen flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md fade-in">
+            <div class="text-center mb-8">
+                <div class="bg-gradient-to-r from-blue-600 to-indigo-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span class="text-white text-2xl font-bold">📚</span>
+                </div>
+                <h1 class="text-2xl font-bold text-gray-800">Smart Attendance</h1>
+                <p class="text-gray-600">Management System</p>
+            </div>
+            
+            <form id="loginForm" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Username</label>
+                    <input type="text" id="username" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter your username" required>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                    <input type="password" id="password" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter your password" required>
+                </div>
+                
+                <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 rounded-lg font-medium hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 transform hover:scale-105">
+                    Sign In
+                </button>
+            </form>
+            
+            <div class="mt-6 text-center text-sm text-gray-500">
+                <p>Demo Accounts:</p>
+                <p>Admin: admin / admin123</p>
+                <p>Teacher: teacher1 / teach123</p>
+                <p>Student: STU001 / JOH.DOE</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div id="dashboard" class="hidden min-h-screen">
+        <!-- Header -->
+        <header class="bg-white shadow-lg border-b border-gray-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center py-4">
+                    <div class="flex items-center space-x-4">
+                        <div class="bg-gradient-to-r from-blue-600 to-indigo-600 w-10 h-10 rounded-lg flex items-center justify-center">
+                            <span class="text-white text-lg font-bold">📚</span>
+                        </div>
+                        <div>
+                            <h1 class="text-xl font-bold text-gray-800">Smart Attendance System</h1>
+                            <p id="userRole" class="text-sm text-gray-600"></p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <span id="currentUser" class="text-gray-700 font-medium"></span>
+                        <button onclick="logout()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors">
+                            Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="bg-gray-800 text-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div id="navMenu" class="flex space-x-8 py-4"></div>
+            </div>
+        </nav>
+
+        <!-- Content Area -->
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div id="contentArea" class="fade-in"></div>
+        </main>
+    </div>
+
+    <script>
+        // Sample Data
+        let users = {
+            admin: { password: 'admin123', role: 'admin', name: 'System Administrator' },
+            teacher1: { password: 'teach123', role: 'teacher', name: 'Dr. Sarah Wilson', department: 'Computer Science', courses: ['Programming I', 'Data Structures'], years: ['1st Year', '2nd Year'], sections: ['CS-A', 'CS-B'] },
+            teacher2: { password: 'teach456', role: 'teacher', name: 'Prof. Michael Brown', department: 'Mathematics', courses: ['Calculus I', 'Linear Algebra'], years: ['1st Year'], sections: ['MATH-A'] },
+            STU001: { password: 'JOH.DOE', role: 'student', name: 'John Doe', department: 'Computer Science', year: '1st Year', section: 'CS-A' },
+            STU002: { password: 'JAN.SMI', role: 'student', name: 'Jane Smith', department: 'Mathematics', year: '1st Year', section: 'MATH-A' },
+            STU003: { password: 'BOB.JOH', role: 'student', name: 'Bob Johnson', department: 'Computer Science', year: '2nd Year', section: 'CS-B' },
+            STU004: { password: 'ALI.SMI', role: 'student', name: 'Alice Smith', department: 'Computer Science', year: '1st Year', section: 'CS-A' },
+            STU005: { password: 'TOM.WIL', role: 'student', name: 'Tom Wilson', department: 'Computer Science', year: '2nd Year', section: 'CS-B' },
+            STU006: { password: 'SAR.JOH', role: 'student', name: 'Sarah Johnson', department: 'Mathematics', year: '1st Year', section: 'MATH-A' }
+        };
+
+        // Attendance storage
+        let attendanceRecords = [];
+
+        let departments = [
+            { 
+                id: 'cs', 
+                name: 'Computer Science', 
+                courses: ['Programming I', 'Data Structures', 'Database Systems', 'Web Development'],
+                sections: ['CS-A', 'CS-B', 'CS-C']
+            },
+            { 
+                id: 'math', 
+                name: 'Mathematics', 
+                courses: ['Calculus I', 'Linear Algebra', 'Statistics', 'Discrete Math'],
+                sections: ['MATH-A', 'MATH-B', 'MATH-C']
+            },
+            { 
+                id: 'eng', 
+                name: 'Engineering', 
+                courses: ['Physics I', 'Engineering Math', 'Circuit Analysis', 'Thermodynamics'],
+                sections: ['ENG-A', 'ENG-B', 'ENG-C']
+            }
+        ];
+
+        // Classes/Sections management
+        let classes = [
+            { id: 'cs-a', name: 'CS-A', department: 'Computer Science', capacity: 30 },
+            { id: 'cs-b', name: 'CS-B', department: 'Computer Science', capacity: 30 },
+            { id: 'cs-c', name: 'CS-C', department: 'Computer Science', capacity: 30 },
+            { id: 'math-a', name: 'MATH-A', department: 'Mathematics', capacity: 25 },
+            { id: 'math-b', name: 'MATH-B', department: 'Mathematics', capacity: 25 },
+            { id: 'math-c', name: 'MATH-C', department: 'Mathematics', capacity: 25 },
+            { id: 'eng-a', name: 'ENG-A', department: 'Engineering', capacity: 35 },
+            { id: 'eng-b', name: 'ENG-B', department: 'Engineering', capacity: 35 },
+            { id: 'eng-c', name: 'ENG-C', department: 'Engineering', capacity: 35 }
+        ];
+
+        let years = ['1st Year', '2nd Year', '3rd Year', '4th Year'];
+        let currentUser = null;
+        let currentView = 'dashboard';
+
+        // Login functionality
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (users[username] && users[username].password === password) {
+                currentUser = { username, ...users[username] };
+                showDashboard();
+            } else {
+                alert('Invalid username or password!');
+            }
+        });
+
+        function showDashboard() {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+            document.getElementById('currentUser').textContent = currentUser.name;
+            document.getElementById('userRole').textContent = `${currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1)} Dashboard`;
+            
+            setupNavigation();
+            showDashboardHome();
+        }
+
+        function setupNavigation() {
+            const navMenu = document.getElementById('navMenu');
+            let menuItems = [];
+
+            if (currentUser.role === 'admin') {
+                menuItems = [
+                    { id: 'dashboard', label: 'Dashboard', icon: '🏠' },
+                    { id: 'departments', label: 'Departments', icon: '🏢' },
+                    { id: 'classes', label: 'Classes', icon: '🏫' },
+                    { id: 'years', label: 'Academic Years', icon: '📅' },
+                    { id: 'students', label: 'Students', icon: '👩‍🎓' },
+                    { id: 'teachers', label: 'Teachers', icon: '👨‍🏫' },
+                    { id: 'reports', label: 'Reports', icon: '📊' },
+                    { id: 'change-password', label: 'Change Password', icon: '🔐' }
+                ];
+            } else if (currentUser.role === 'teacher') {
+                menuItems = [
+                    { id: 'dashboard', label: 'Dashboard', icon: '🏠' },
+                    { id: 'attendance', label: 'Mark Attendance', icon: '✅' },
+                    { id: 'view-attendance', label: 'View Attendance', icon: '👀' },
+                    { id: 'reports', label: 'Class Reports', icon: '📊' }
+                ];
+            } else if (currentUser.role === 'student') {
+                menuItems = [
+                    { id: 'dashboard', label: 'Dashboard', icon: '🏠' },
+                    { id: 'my-attendance', label: 'My Attendance', icon: '📋' },
+                    { id: 'my-reports', label: 'My Reports', icon: '📊' }
+                ];
+            }
+
+            navMenu.innerHTML = menuItems.map(item => 
+                `<button onclick="showView('${item.id}')" class="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors ${currentView === item.id ? 'bg-gray-700' : ''}">
+                    <span>${item.icon}</span>
+                    <span>${item.label}</span>
+                </button>`
+            ).join('');
+        }
+
+        function showView(view) {
+            currentView = view;
+            setupNavigation();
+            
+            switch(view) {
+                case 'dashboard':
+                    showDashboardHome();
+                    break;
+                case 'departments':
+                    showDepartments();
+                    break;
+                case 'classes':
+                    showClasses();
+                    break;
+                case 'years':
+                    showYears();
+                    break;
+                case 'students':
+                    showStudents();
+                    break;
+                case 'teachers':
+                    showTeachers();
+                    break;
+                case 'attendance':
+                    showMarkAttendance();
+                    break;
+                case 'view-attendance':
+                    showViewAttendance();
+                    break;
+                case 'my-attendance':
+                    showMyAttendance();
+                    break;
+                case 'reports':
+                    showReports();
+                    break;
+                case 'my-reports':
+                    showMyReports();
+                    break;
+                case 'change-password':
+                    showChangePassword();
+                    break;
+            }
+        }
+
+        function showDashboardHome() {
+            const content = document.getElementById('contentArea');
+            
+            if (currentUser.role === 'admin') {
+                const totalStudents = Object.values(users).filter(u => u.role === 'student').length;
+                const totalTeachers = Object.values(users).filter(u => u.role === 'teacher').length;
+                
+                content.innerHTML = `
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-600 text-sm">Total Students</p>
+                                    <p class="text-3xl font-bold text-gray-800">${totalStudents}</p>
+                                </div>
+                                <div class="bg-blue-100 p-3 rounded-full">
+                                    <span class="text-2xl">👩‍🎓</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-600 text-sm">Total Teachers</p>
+                                    <p class="text-3xl font-bold text-gray-800">${totalTeachers}</p>
+                                </div>
+                                <div class="bg-green-100 p-3 rounded-full">
+                                    <span class="text-2xl">👨‍🏫</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-purple-500">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-600 text-sm">Departments</p>
+                                    <p class="text-3xl font-bold text-gray-800">${departments.length}</p>
+                                </div>
+                                <div class="bg-purple-100 p-3 rounded-full">
+                                    <span class="text-2xl">🏢</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-orange-500">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-600 text-sm">Total Classes</p>
+                                    <p class="text-3xl font-bold text-gray-800">${classes.length}</p>
+                                </div>
+                                <div class="bg-orange-100 p-3 rounded-full">
+                                    <span class="text-2xl">🏫</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h2 class="text-xl font-bold text-gray-800 mb-4">Welcome, ${currentUser.name}!</h2>
+                        <p class="text-gray-600">You have full administrative access to the Smart Attendance Management System. Use the navigation menu above to manage departments, students, teachers, and generate reports.</p>
+                    </div>
+                `;
+            } else if (currentUser.role === 'teacher') {
+                content.innerHTML = `
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h2 class="text-xl font-bold text-gray-800 mb-4">Welcome, ${currentUser.name}!</h2>
+                        <p class="text-gray-600 mb-4">Department: ${currentUser.department}</p>
+                        <p class="text-gray-600">Use the navigation menu to mark attendance for your classes and view attendance reports.</p>
+                        
+                        <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <button onclick="showView('attendance')" class="bg-blue-500 hover:bg-blue-600 text-white p-4 rounded-lg transition-colors">
+                                <span class="text-2xl block mb-2">✅</span>
+                                <span class="font-medium">Mark Attendance</span>
+                            </button>
+                            <button onclick="showView('view-attendance')" class="bg-green-500 hover:bg-green-600 text-white p-4 rounded-lg transition-colors">
+                                <span class="text-2xl block mb-2">👀</span>
+                                <span class="font-medium">View Attendance</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            } else if (currentUser.role === 'student') {
+                content.innerHTML = `
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h2 class="text-xl font-bold text-gray-800 mb-4">Welcome, ${currentUser.name}!</h2>
+                        <p class="text-gray-600 mb-2">Department: ${currentUser.department}</p>
+                        <p class="text-gray-600 mb-4">Academic Year: ${currentUser.year}</p>
+                        <p class="text-gray-600">View your attendance records and download reports using the navigation menu.</p>
+                        
+                        <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <button onclick="showView('my-attendance')" class="bg-blue-500 hover:bg-blue-600 text-white p-4 rounded-lg transition-colors">
+                                <span class="text-2xl block mb-2">📋</span>
+                                <span class="font-medium">My Attendance</span>
+                            </button>
+                            <button onclick="showView('my-reports')" class="bg-green-500 hover:bg-green-600 text-white p-4 rounded-lg transition-colors">
+                                <span class="text-2xl block mb-2">📊</span>
+                                <span class="font-medium">My Reports</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function showDepartments() {
+            const content = document.getElementById('contentArea');
+            content.innerHTML = `
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-gray-800">Department Management</h2>
+                        <button onclick="showAddDepartmentModal()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors">
+                            + Add Department
+                        </button>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        ${departments.map(dept => `
+                            <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                                <h3 class="text-lg font-semibold text-gray-800 mb-2">${dept.name}</h3>
+                                <p class="text-gray-600 text-sm mb-3">Courses: ${dept.courses.length}</p>
+                                <div class="space-y-1 mb-4">
+                                    ${dept.courses.slice(0, 3).map(course => `
+                                        <div class="text-sm text-gray-600">• ${course}</div>
+                                    `).join('')}
+                                    ${dept.courses.length > 3 ? `<div class="text-sm text-gray-500">... and ${dept.courses.length - 3} more</div>` : ''}
+                                </div>
+                                <div class="flex space-x-2">
+                                    <button onclick="editDepartment('${dept.id}')" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-sm transition-colors">
+                                        Edit
+                                    </button>
+                                    <button onclick="deleteDepartment('${dept.id}')" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm transition-colors">
+                                        Delete
+                                    </button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function showClasses() {
+            const content = document.getElementById('contentArea');
+            
+            // Group classes by department
+            const classesByDept = {};
+            classes.forEach(cls => {
+                if (!classesByDept[cls.department]) {
+                    classesByDept[cls.department] = [];
+                }
+                classesByDept[cls.department].push(cls);
+            });
+            
+            content.innerHTML = `
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-gray-800">Classes Management</h2>
+                        <div class="flex space-x-4">
+                            <input type="text" id="classSearch" placeholder="Search classes..." class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <button onclick="showAddClassModal()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors">
+                                + Add Class
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="classesList" class="space-y-6">
+                        ${Object.entries(classesByDept).map(([dept, deptClasses]) => `
+                            <div class="border border-gray-200 rounded-lg overflow-hidden">
+                                <div class="bg-blue-50 border-b border-gray-200 px-6 py-4">
+                                    <h3 class="text-lg font-semibold text-blue-800 flex items-center">
+                                        <span class="text-2xl mr-3">🏢</span>
+                                        ${dept}
+                                        <span class="ml-2 bg-blue-100 text-blue-600 px-2 py-1 rounded-full text-sm">
+                                            ${deptClasses.length} classes
+                                        </span>
+                                    </h3>
+                                </div>
+                                
+                                <div class="overflow-x-auto">
+                                    <table class="w-full table-auto">
+                                        <thead>
+                                            <tr class="bg-gray-50">
+                                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Class Name</th>
+                                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Capacity</th>
+                                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Current Students</th>
+                                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            ${deptClasses.map(cls => {
+                                                const currentStudents = Object.values(users).filter(user => 
+                                                    user.role === 'student' && user.section === cls.name
+                                                ).length;
+                                                
+                                                return `
+                                                    <tr class="border-b border-gray-100 hover:bg-gray-50">
+                                                        <td class="px-4 py-3 text-sm text-gray-800 font-medium">${cls.name}</td>
+                                                        <td class="px-4 py-3 text-sm text-gray-600">${cls.capacity}</td>
+                                                        <td class="px-4 py-3 text-sm">
+                                                            <span class="px-2 py-1 rounded-full text-xs ${currentStudents >= cls.capacity ? 'bg-red-100 text-red-800' : currentStudents >= cls.capacity * 0.8 ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'}">
+                                                                ${currentStudents}/${cls.capacity}
+                                                            </span>
+                                                        </td>
+                                                        <td class="px-4 py-3 text-sm">
+                                                            <div class="flex space-x-2">
+                                                                <button onclick="editClass('${cls.id}')" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-xs transition-colors">
+                                                                    Edit
+                                                                </button>
+                                                                <button onclick="deleteClass('${cls.id}')" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs transition-colors">
+                                                                    Delete
+                                                                </button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                `;
+                                            }).join('')}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            
+            // Add search functionality
+            document.getElementById('classSearch').addEventListener('input', function(e) {
+                filterClasses(e.target.value);
+            });
+        }
+
+        function showYears() {
+            const content = document.getElementById('contentArea');
+            content.innerHTML = `
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-gray-800">Academic Years Management</h2>
+                        <button onclick="showAddYearModal()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors">
+                            + Add Year
+                        </button>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        ${years.map(year => `
+                            <div class="border border-gray-200 rounded-lg p-4 text-center hover:shadow-md transition-shadow">
+                                <div class="text-2xl font-bold text-gray-800 mb-2">${year}</div>
+                                <div class="text-sm text-gray-600 mb-3">Academic Year</div>
+                                <div class="flex space-x-2 justify-center">
+                                    <button onclick="editYear('${year}')" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-sm transition-colors">
+                                        Edit
+                                    </button>
+                                    <button onclick="deleteYear('${year}')" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm transition-colors">
+                                        Delete
+                                    </button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function showStudents() {
+            const content = document.getElementById('contentArea');
+            const students = Object.entries(users).filter(([id, user]) => user.role === 'student');
+            
+            // Group students by department, then by year, then by section
+            const groupedStudents = {};
+            
+            students.forEach(([id, student]) => {
+                const dept = student.department || 'Unassigned';
+                const year = student.year || 'Unassigned';
+                const section = student.section || 'Unassigned';
+                
+                if (!groupedStudents[dept]) {
+                    groupedStudents[dept] = {};
+                }
+                if (!groupedStudents[dept][year]) {
+                    groupedStudents[dept][year] = {};
+                }
+                if (!groupedStudents[dept][year][section]) {
+                    groupedStudents[dept][year][section] = [];
+                }
+                
+                groupedStudents[dept][year][section].push([id, student]);
+            });
+            
+            content.innerHTML = `
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-gray-800">Student Management</h2>
+                        <div class="flex space-x-4">
+                            <input type="text" id="studentSearch" placeholder="Search students..." class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <button onclick="showAddStudentModal()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors">
+                                + Add Student
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="studentsList" class="space-y-6">
+                        ${Object.entries(groupedStudents).map(([dept, years]) => `
+                            <div class="border border-gray-200 rounded-lg overflow-hidden">
+                                <div class="bg-blue-50 border-b border-gray-200 px-6 py-4">
+                                    <h3 class="text-lg font-semibold text-blue-800 flex items-center">
+                                        <span class="text-2xl mr-3">🏢</span>
+                                        ${dept}
+                                        <span class="ml-2 bg-blue-100 text-blue-600 px-2 py-1 rounded-full text-sm">
+                                            ${Object.values(years).reduce((total, sections) => 
+                                                total + Object.values(sections).reduce((sectionTotal, students) => 
+                                                    sectionTotal + students.length, 0), 0)} students
+                                        </span>
+                                    </h3>
+                                </div>
+                                
+                                <div class="p-4 space-y-4">
+                                    ${Object.entries(years).sort((a, b) => {
+                                        const yearOrder = ['1st Year', '2nd Year', '3rd Year', '4th Year'];
+                                        return yearOrder.indexOf(a[0]) - yearOrder.indexOf(b[0]);
+                                    }).map(([year, sections]) => `
+                                        <div class="border border-gray-100 rounded-lg overflow-hidden">
+                                            <div class="bg-green-50 border-b border-gray-100 px-4 py-3">
+                                                <h4 class="text-md font-semibold text-green-800 flex items-center">
+                                                    <span class="text-lg mr-2">📅</span>
+                                                    ${year}
+                                                    <span class="ml-2 bg-green-100 text-green-600 px-2 py-1 rounded-full text-xs">
+                                                        ${Object.values(sections).reduce((total, students) => total + students.length, 0)} students
+                                                    </span>
+                                                </h4>
+                                            </div>
+                                            
+                                            <div class="p-3 space-y-3">
+                                                ${Object.entries(sections).sort().map(([section, sectionStudents]) => `
+                                                    <div class="border border-gray-50 rounded-md overflow-hidden">
+                                                        <div class="bg-purple-50 border-b border-gray-50 px-3 py-2">
+                                                            <h5 class="text-sm font-semibold text-purple-800 flex items-center">
+                                                                <span class="text-md mr-2">👥</span>
+                                                                Section ${section}
+                                                                <span class="ml-2 bg-purple-100 text-purple-600 px-2 py-1 rounded-full text-xs">
+                                                                    ${sectionStudents.length} students
+                                                                </span>
+                                                            </h5>
+                                                        </div>
+                                                        
+                                                        <div class="overflow-x-auto">
+                                                            <table class="w-full table-auto">
+                                                                <thead>
+                                                                    <tr class="bg-gray-50">
+                                                                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-700">Student ID</th>
+                                                                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-700">Name</th>
+                                                                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-700">Password</th>
+                                                                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-700">Actions</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    ${sectionStudents.map(([id, student]) => `
+                                                                        <tr class="border-b border-gray-100 hover:bg-gray-50">
+                                                                            <td class="px-3 py-2 text-xs text-gray-800">${id}</td>
+                                                                            <td class="px-3 py-2 text-xs text-gray-800">${student.name}</td>
+                                                                            <td class="px-3 py-2 text-xs text-gray-600 font-mono">${student.password}</td>
+                                                                            <td class="px-3 py-2 text-xs">
+                                                                                <div class="flex space-x-1">
+                                                                                    <button onclick="editStudent('${id}')" class="bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded text-xs transition-colors">
+                                                                                        Edit
+                                                                                    </button>
+                                                                                    <button onclick="deleteStudent('${id}')" class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-xs transition-colors">
+                                                                                        Delete
+                                                                                    </button>
+                                                                                </div>
+                                                                            </td>
+                                                                        </tr>
+                                                                    `).join('')}
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                `).join('')}
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            
+            // Add search functionality
+            document.getElementById('studentSearch').addEventListener('input', function(e) {
+                filterStudentsGrouped(e.target.value);
+            });
+        }
+
+        function showTeachers() {
+            const content = document.getElementById('contentArea');
+            const teachers = Object.entries(users).filter(([id, user]) => user.role === 'teacher');
+            
+            content.innerHTML = `
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-gray-800">Teacher Management</h2>
+                        <div class="flex space-x-4">
+                            <input type="text" id="teacherSearch" placeholder="Search teachers..." class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <button onclick="showAddTeacherModal()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors">
+                                + Add Teacher
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full table-auto">
+                            <thead>
+                                <tr class="bg-gray-50">
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Teacher ID</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Name</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Department</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Years</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Sections</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Courses</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Password</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="teacherTableBody">
+                                ${teachers.map(([id, teacher]) => `
+                                    <tr class="border-b border-gray-200 hover:bg-gray-50">
+                                        <td class="px-4 py-3 text-sm text-gray-800">${id}</td>
+                                        <td class="px-4 py-3 text-sm text-gray-800">${teacher.name}</td>
+                                        <td class="px-4 py-3 text-sm text-gray-600">${teacher.department}</td>
+                                        <td class="px-4 py-3 text-sm text-gray-600">${teacher.years ? teacher.years.join(', ') : 'No years assigned'}</td>
+                                        <td class="px-4 py-3 text-sm text-gray-600">${teacher.sections ? teacher.sections.join(', ') : 'No sections assigned'}</td>
+                                        <td class="px-4 py-3 text-sm text-gray-600">${teacher.courses ? teacher.courses.join(', ') : 'No courses assigned'}</td>
+                                        <td class="px-4 py-3 text-sm text-gray-600 font-mono">${teacher.password}</td>
+                                        <td class="px-4 py-3 text-sm">
+                                            <div class="flex space-x-2">
+                                                <button onclick="editTeacher('${id}')" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-xs transition-colors">
+                                                    Edit
+                                                </button>
+                                                <button onclick="deleteTeacher('${id}')" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs transition-colors">
+                                                    Delete
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+            
+            // Add search functionality
+            document.getElementById('teacherSearch').addEventListener('input', function(e) {
+                filterTeachers(e.target.value);
+            });
+        }
+
+        function showMarkAttendance() {
+            const content = document.getElementById('contentArea');
+            const teacherCourses = currentUser.courses || [];
+            const teacherSections = currentUser.sections || [];
+            const teacherYears = currentUser.years || [];
+            const students = Object.entries(users).filter(([id, user]) => 
+                user.role === 'student' && 
+                user.department === currentUser.department &&
+                teacherSections.includes(user.section) &&
+                teacherYears.includes(user.year)
+            );
+            
+            content.innerHTML = `
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">Mark Attendance</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Year</label>
+                            <select id="yearSelect" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" onchange="updateSectionsForYear()">
+                                ${teacherYears.map(year => `<option value="${year}">${year}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Section</label>
+                            <select id="sectionSelect" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" onchange="updateStudentList()">
+                                ${teacherSections.map(section => `<option value="${section}">${section}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Course</label>
+                            <select id="courseSelect" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                ${teacherCourses.map(course => `<option value="${course}">${course}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Date</label>
+                            <input type="date" id="attendanceDate" value="${new Date().toISOString().split('T')[0]}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Time</label>
+                            <input type="time" id="attendanceTime" value="${new Date().toTimeString().slice(0,5)}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full table-auto">
+                            <thead>
+                                <tr class="bg-gray-50">
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Student ID</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Name</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Year</th>
+                                    <th class="px-4 py-3 text-center text-sm font-medium text-gray-700">Attendance</th>
+                                </tr>
+                            </thead>
+                            <tbody id="studentAttendanceTable">
+                                ${students.map(([id, student]) => `
+                                    <tr class="border-b border-gray-200">
+                                        <td class="px-4 py-3 text-sm text-gray-800">${id}</td>
+                                        <td class="px-4 py-3 text-sm text-gray-800">${student.name}</td>
+                                        <td class="px-4 py-3 text-sm text-gray-600">${student.year}</td>
+                                        <td class="px-4 py-3 text-center">
+                                            <div class="flex justify-center space-x-2">
+                                                <label class="flex items-center">
+                                                    <input type="radio" name="attendance_${id}" value="present" class="mr-1 text-green-500">
+                                                    <span class="text-green-600 text-sm">Present</span>
+                                                </label>
+                                                <label class="flex items-center">
+                                                    <input type="radio" name="attendance_${id}" value="absent" class="mr-1 text-red-500">
+                                                    <span class="text-red-600 text-sm">Absent</span>
+                                                </label>
+                                                <label class="flex items-center">
+                                                    <input type="radio" name="attendance_${id}" value="late" class="mr-1 text-yellow-500">
+                                                    <span class="text-yellow-600 text-sm">Late</span>
+                                                </label>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="mt-6 flex justify-end">
+                        <button onclick="saveAttendance()" class="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg transition-colors">
+                            Save Attendance
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function showViewAttendance() {
+            const content = document.getElementById('contentArea');
+            const teacherCourses = currentUser.courses || [];
+            
+            content.innerHTML = `
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">View Attendance Records</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Course</label>
+                            <select id="filterCourse" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                <option value="">All Courses</option>
+                                ${teacherCourses.map(course => `<option value="${course}">${course}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">From Date</label>
+                            <input type="date" id="filterFromDate" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">To Date</label>
+                            <input type="date" id="filterToDate" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div class="flex items-end">
+                            <button onclick="filterAttendanceRecords()" class="w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors">
+                                Filter
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="attendanceResults">
+                        ${displayAttendanceRecords()}
+                    </div>
+                </div>
+            `;
+        }
+        
+        function displayAttendanceRecords(filteredRecords = null) {
+            const records = filteredRecords || attendanceRecords.filter(record => 
+                record.department === currentUser.department && 
+                currentUser.courses.includes(record.course)
+            );
+            
+            if (records.length === 0) {
+                return `
+                    <div class="bg-gray-50 p-8 rounded-lg text-center">
+                        <div class="text-gray-400 text-6xl mb-4">📋</div>
+                        <p class="text-gray-600 text-lg">No attendance records found</p>
+                        <p class="text-gray-500 text-sm mt-2">Start by marking attendance for your classes</p>
+                    </div>
+                `;
+            }
+            
+            // Group records by date and course
+            const groupedRecords = {};
+            records.forEach(record => {
+                const key = `${record.date}_${record.course}`;
+                if (!groupedRecords[key]) {
+                    groupedRecords[key] = {
+                        date: record.date,
+                        course: record.course,
+                        time: record.time,
+                        records: []
+                    };
+                }
+                groupedRecords[key].records.push(record);
+            });
+            
+            return `
+                <div class="space-y-6">
+                    ${Object.values(groupedRecords).map(group => `
+                        <div class="border border-gray-200 rounded-lg p-4">
+                            <div class="flex justify-between items-center mb-4">
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-800">${group.course}</h3>
+                                    <p class="text-gray-600">${formatDate(group.date)} at ${group.time}</p>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-sm text-gray-600">
+                                        Present: ${group.records.filter(r => r.status === 'present').length} | 
+                                        Absent: ${group.records.filter(r => r.status === 'absent').length} | 
+                                        Late: ${group.records.filter(r => r.status === 'late').length}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="overflow-x-auto">
+                                <table class="w-full table-auto">
+                                    <thead>
+                                        <tr class="bg-gray-50">
+                                            <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Student ID</th>
+                                            <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Name</th>
+                                            <th class="px-4 py-2 text-center text-sm font-medium text-gray-700">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${group.records.map(record => `
+                                            <tr class="border-b border-gray-200">
+                                                <td class="px-4 py-2 text-sm text-gray-800">${record.studentId}</td>
+                                                <td class="px-4 py-2 text-sm text-gray-800">${record.studentName}</td>
+                                                <td class="px-4 py-2 text-center">
+                                                    <span class="px-2 py-1 rounded-full text-xs ${getStatusColor(record.status)}">
+                                                        ${record.status.charAt(0).toUpperCase() + record.status.slice(1)}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+        
+        function filterAttendanceRecords() {
+            const course = document.getElementById('filterCourse').value;
+            const fromDate = document.getElementById('filterFromDate').value;
+            const toDate = document.getElementById('filterToDate').value;
+            
+            let filtered = attendanceRecords.filter(record => 
+                record.department === currentUser.department && 
+                currentUser.courses.includes(record.course)
+            );
+            
+            if (course) {
+                filtered = filtered.filter(record => record.course === course);
+            }
+            
+            if (fromDate) {
+                filtered = filtered.filter(record => record.date >= fromDate);
+            }
+            
+            if (toDate) {
+                filtered = filtered.filter(record => record.date <= toDate);
+            }
+            
+            document.getElementById('attendanceResults').innerHTML = displayAttendanceRecords(filtered);
+        }
+        
+        function getStatusColor(status) {
+            switch(status) {
+                case 'present': return 'bg-green-100 text-green-800';
+                case 'absent': return 'bg-red-100 text-red-800';
+                case 'late': return 'bg-yellow-100 text-yellow-800';
+                default: return 'bg-gray-100 text-gray-800';
+            }
+        }
+        
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+        }
+
+        function showMyAttendance() {
+            const content = document.getElementById('contentArea');
+            content.innerHTML = `
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">My Attendance</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                            <h3 class="text-lg font-semibold text-green-800 mb-2">Overall Attendance</h3>
+                            <div class="text-3xl font-bold text-green-600">85%</div>
+                            <p class="text-green-600 text-sm">Good attendance record</p>
+                        </div>
+                        
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                            <h3 class="text-lg font-semibold text-blue-800 mb-2">This Month</h3>
+                            <div class="text-3xl font-bold text-blue-600">92%</div>
+                            <p class="text-blue-600 text-sm">Excellent progress</p>
+                        </div>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full table-auto">
+                            <thead>
+                                <tr class="bg-gray-50">
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Course</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Date</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Time</th>
+                                    <th class="px-4 py-3 text-center text-sm font-medium text-gray-700">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b border-gray-200">
+                                    <td class="px-4 py-3 text-sm text-gray-800">Programming I</td>
+                                    <td class="px-4 py-3 text-sm text-gray-600">2024-01-15</td>
+                                    <td class="px-4 py-3 text-sm text-gray-600">09:00 AM</td>
+                                    <td class="px-4 py-3 text-center">
+                                        <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Present</span>
+                                    </td>
+                                </tr>
+                                <tr class="border-b border-gray-200">
+                                    <td class="px-4 py-3 text-sm text-gray-800">Data Structures</td>
+                                    <td class="px-4 py-3 text-sm text-gray-600">2024-01-14</td>
+                                    <td class="px-4 py-3 text-sm text-gray-600">11:00 AM</td>
+                                    <td class="px-4 py-3 text-center">
+                                        <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs">Late</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        }
+
+        function showReports() {
+            const content = document.getElementById('contentArea');
+            
+            if (currentUser.role === 'admin') {
+                // Group students by department and year for admin reports
+                const studentsByDept = {};
+                Object.entries(users).filter(([id, user]) => user.role === 'student').forEach(([id, student]) => {
+                    const dept = student.department || 'Unassigned';
+                    const year = student.year || 'Unassigned';
+                    
+                    if (!studentsByDept[dept]) {
+                        studentsByDept[dept] = {};
+                    }
+                    if (!studentsByDept[dept][year]) {
+                        studentsByDept[dept][year] = [];
+                    }
+                    studentsByDept[dept][year].push([id, student]);
+                });
+                
+                content.innerHTML = `
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-6">Attendance Reports by Department & Year</h2>
+                        
+                        <div class="space-y-6">
+                            ${departments.map(dept => {
+                                const deptData = studentsByDept[dept.name] || {};
+                                const totalStudents = Object.values(deptData).reduce((total, yearStudents) => total + yearStudents.length, 0);
+                                
+                                return `
+                                    <div class="border border-gray-200 rounded-lg overflow-hidden">
+                                        <div class="bg-blue-50 border-b border-gray-200 px-6 py-4">
+                                            <div class="flex justify-between items-center">
+                                                <h3 class="text-lg font-semibold text-blue-800 flex items-center">
+                                                    <span class="text-2xl mr-3">🏢</span>
+                                                    ${dept.name}
+                                                    <span class="ml-2 bg-blue-100 text-blue-600 px-2 py-1 rounded-full text-sm">
+                                                        ${totalStudents} students
+                                                    </span>
+                                                </h3>
+                                                <button onclick="generateDepartmentReport('${dept.id}')" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors">
+                                                    Generate Full Report
+                                                </button>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="p-4">
+                                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                                ${years.map(year => {
+                                                    const yearStudents = deptData[year] || [];
+                                                    const yearSections = {};
+                                                    
+                                                    yearStudents.forEach(([id, student]) => {
+                                                        const section = student.section || 'Unassigned';
+                                                        if (!yearSections[section]) {
+                                                            yearSections[section] = 0;
+                                                        }
+                                                        yearSections[section]++;
+                                                    });
+                                                    
+                                                    return `
+                                                        <div class="border border-gray-100 rounded-lg p-4 ${yearStudents.length === 0 ? 'opacity-50' : ''}">
+                                                            <div class="flex items-center justify-between mb-3">
+                                                                <h4 class="text-md font-semibold text-green-800 flex items-center">
+                                                                    <span class="text-lg mr-2">📅</span>
+                                                                    ${year}
+                                                                </h4>
+                                                                <span class="bg-green-100 text-green-600 px-2 py-1 rounded-full text-xs">
+                                                                    ${yearStudents.length}
+                                                                </span>
+                                                            </div>
+                                                            
+                                                            <div class="space-y-2">
+                                                                <div class="flex justify-between text-sm">
+                                                                    <span class="text-gray-600">Avg Attendance:</span>
+                                                                    <span class="font-medium text-green-600">${Math.floor(Math.random() * 20) + 80}%</span>
+                                                                </div>
+                                                                
+                                                                ${Object.entries(yearSections).length > 0 ? `
+                                                                    <div class="text-xs text-gray-500">
+                                                                        <div class="font-medium mb-1">Sections:</div>
+                                                                        ${Object.entries(yearSections).map(([section, count]) => `
+                                                                            <div class="flex justify-between">
+                                                                                <span>${section}:</span>
+                                                                                <span>${count}</span>
+                                                                            </div>
+                                                                        `).join('')}
+                                                                    </div>
+                                                                ` : `
+                                                                    <div class="text-xs text-gray-400 italic">No students enrolled</div>
+                                                                `}
+                                                            </div>
+                                                            
+                                                            ${yearStudents.length > 0 ? `
+                                                                <button onclick="generateYearReport('${dept.id}', '${year}')" class="w-full mt-3 bg-green-500 hover:bg-green-600 text-white py-1 px-2 rounded text-xs transition-colors">
+                                                                    Year Report
+                                                                </button>
+                                                            ` : ''}
+                                                        </div>
+                                                    `;
+                                                }).join('')}
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                `;
+            } else {
+                // Teacher reports
+                const teacherRecords = attendanceRecords.filter(record => 
+                    record.department === currentUser.department && 
+                    currentUser.courses.includes(record.course)
+                );
+                
+                content.innerHTML = `
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-6">Class Reports</h2>
+                        
+                        ${teacherRecords.length === 0 ? `
+                            <div class="bg-gray-50 p-8 rounded-lg text-center">
+                                <div class="text-gray-400 text-6xl mb-4">📊</div>
+                                <p class="text-gray-600 text-lg">No attendance data available</p>
+                                <p class="text-gray-500 text-sm mt-2">Start marking attendance to generate reports</p>
+                            </div>
+                        ` : `
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                ${currentUser.courses.map(course => {
+                                    const courseRecords = teacherRecords.filter(r => r.course === course);
+                                    const totalRecords = courseRecords.length;
+                                    const presentCount = courseRecords.filter(r => r.status === 'present').length;
+                                    const attendanceRate = totalRecords > 0 ? Math.round((presentCount / totalRecords) * 100) : 0;
+                                    
+                                    return `
+                                        <div class="border border-gray-200 rounded-lg p-6">
+                                            <h3 class="text-lg font-semibold text-gray-800 mb-4">${course}</h3>
+                                            <div class="space-y-3">
+                                                <div class="flex justify-between">
+                                                    <span class="text-gray-600">Total Records:</span>
+                                                    <span class="font-medium">${totalRecords}</span>
+                                                </div>
+                                                <div class="flex justify-between">
+                                                    <span class="text-gray-600">Present:</span>
+                                                    <span class="font-medium text-green-600">${presentCount}</span>
+                                                </div>
+                                                <div class="flex justify-between">
+                                                    <span class="text-gray-600">Absent:</span>
+                                                    <span class="font-medium text-red-600">${courseRecords.filter(r => r.status === 'absent').length}</span>
+                                                </div>
+                                                <div class="flex justify-between">
+                                                    <span class="text-gray-600">Late:</span>
+                                                    <span class="font-medium text-yellow-600">${courseRecords.filter(r => r.status === 'late').length}</span>
+                                                </div>
+                                                <div class="flex justify-between border-t pt-2">
+                                                    <span class="text-gray-600 font-medium">Attendance Rate:</span>
+                                                    <span class="font-bold text-blue-600">${attendanceRate}%</span>
+                                                </div>
+                                            </div>
+                                            <button onclick="downloadCourseReport('${course}')" class="w-full mt-4 bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg transition-colors">
+                                                Download Report
+                                            </button>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                            
+                            <div class="border border-gray-200 rounded-lg p-6">
+                                <h3 class="text-lg font-semibold text-gray-800 mb-4">Recent Attendance Sessions</h3>
+                                <div class="overflow-x-auto">
+                                    <table class="w-full table-auto">
+                                        <thead>
+                                            <tr class="bg-gray-50">
+                                                <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Course</th>
+                                                <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Date</th>
+                                                <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Time</th>
+                                                <th class="px-4 py-2 text-center text-sm font-medium text-gray-700">Present</th>
+                                                <th class="px-4 py-2 text-center text-sm font-medium text-gray-700">Absent</th>
+                                                <th class="px-4 py-2 text-center text-sm font-medium text-gray-700">Late</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            ${getRecentSessions(teacherRecords).map(session => `
+                                                <tr class="border-b border-gray-200">
+                                                    <td class="px-4 py-2 text-sm text-gray-800">${session.course}</td>
+                                                    <td class="px-4 py-2 text-sm text-gray-600">${session.date}</td>
+                                                    <td class="px-4 py-2 text-sm text-gray-600">${session.time}</td>
+                                                    <td class="px-4 py-2 text-center">
+                                                        <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">
+                                                            ${session.present}
+                                                        </span>
+                                                    </td>
+                                                    <td class="px-4 py-2 text-center">
+                                                        <span class="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs">
+                                                            ${session.absent}
+                                                        </span>
+                                                    </td>
+                                                    <td class="px-4 py-2 text-center">
+                                                        <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs">
+                                                            ${session.late}
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            `).join('')}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        `}
+                    </div>
+                `;
+            }
+        }
+
+        function showMyReports() {
+            const content = document.getElementById('contentArea');
+            content.innerHTML = `
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">My Attendance Reports</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div class="border border-gray-200 rounded-lg p-4">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-3">Monthly Report</h3>
+                            <p class="text-gray-600 mb-4">Download your attendance report for the current month</p>
+                            <button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors">
+                                Download PDF
+                            </button>
+                        </div>
+                        
+                        <div class="border border-gray-200 rounded-lg p-4">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-3">Semester Report</h3>
+                            <p class="text-gray-600 mb-4">Download your complete semester attendance report</p>
+                            <button class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors">
+                                Download PDF
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function showChangePassword() {
+            const content = document.getElementById('contentArea');
+            content.innerHTML = `
+                <div class="bg-white rounded-xl shadow-lg p-6 max-w-md mx-auto">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">Change Password</h2>
+                    
+                    <form id="changePasswordForm" class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Current Password</label>
+                            <input type="password" id="currentPassword" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter current password" required>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">New Password</label>
+                            <input type="password" id="newPassword" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter new password" required>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Confirm New Password</label>
+                            <input type="password" id="confirmPassword" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Confirm new password" required>
+                        </div>
+                        
+                        <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 rounded-lg font-medium hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 transform hover:scale-105">
+                            Update Password
+                        </button>
+                    </form>
+                </div>
+            `;
+            
+            document.getElementById('changePasswordForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const currentPassword = document.getElementById('currentPassword').value;
+                const newPassword = document.getElementById('newPassword').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+                
+                // Validate current password
+                if (currentPassword !== currentUser.password) {
+                    alert('Current password is incorrect!');
+                    return;
+                }
+                
+                // Validate new password confirmation
+                if (newPassword !== confirmPassword) {
+                    alert('New passwords do not match!');
+                    return;
+                }
+                
+                // Validate new password length
+                if (newPassword.length < 6) {
+                    alert('New password must be at least 6 characters long!');
+                    return;
+                }
+                
+                // Update password
+                users[currentUser.username].password = newPassword;
+                currentUser.password = newPassword;
+                
+                alert('Password updated successfully!');
+                
+                // Clear form
+                document.getElementById('currentPassword').value = '';
+                document.getElementById('newPassword').value = '';
+                document.getElementById('confirmPassword').value = '';
+            });
+        }
+
+        // Utility functions
+        function generateStudentPassword(firstName, lastName) {
+            const first3 = firstName.substring(0, 3).toUpperCase();
+            const last3 = lastName.substring(0, 3).toUpperCase();
+            return `${first3}.${last3}`;
+        }
+
+        function generateStudentId() {
+            const existingIds = Object.keys(users).filter(id => id.startsWith('STU'));
+            const numbers = existingIds.map(id => parseInt(id.substring(3))).filter(n => !isNaN(n));
+            const nextNumber = numbers.length > 0 ? Math.max(...numbers) + 1 : 1;
+            return `STU${nextNumber.toString().padStart(3, '0')}`;
+        }
+
+        function generateTeacherId() {
+            const existingIds = Object.keys(users).filter(id => id.startsWith('teacher'));
+            const numbers = existingIds.map(id => parseInt(id.substring(7))).filter(n => !isNaN(n));
+            const nextNumber = numbers.length > 0 ? Math.max(...numbers) + 1 : 1;
+            return `teacher${nextNumber}`;
+        }
+
+        function filterStudents(searchTerm) {
+            const tbody = document.getElementById('studentTableBody');
+            const rows = tbody.getElementsByTagName('tr');
+            
+            for (let row of rows) {
+                const text = row.textContent.toLowerCase();
+                if (text.includes(searchTerm.toLowerCase())) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            }
+        }
+
+        function filterStudentsGrouped(searchTerm) {
+            const studentsList = document.getElementById('studentsList');
+            const allRows = studentsList.querySelectorAll('tbody tr');
+            const allSections = studentsList.querySelectorAll('[class*="border-gray-50"]');
+            const allYears = studentsList.querySelectorAll('[class*="border-gray-100"]');
+            const allDepartments = studentsList.querySelectorAll('[class*="border-gray-200"]');
+            
+            if (!searchTerm.trim()) {
+                // Show all if search is empty
+                allRows.forEach(row => row.style.display = '');
+                allSections.forEach(section => section.style.display = '');
+                allYears.forEach(year => year.style.display = '');
+                allDepartments.forEach(dept => dept.style.display = '');
+                return;
+            }
+            
+            const searchLower = searchTerm.toLowerCase();
+            
+            // First hide all rows
+            allRows.forEach(row => row.style.display = 'none');
+            
+            // Show matching rows and their parent containers
+            allRows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                if (text.includes(searchLower)) {
+                    row.style.display = '';
+                    
+                    // Show parent section, year, and department
+                    let parent = row.closest('[class*="border-gray-50"]');
+                    if (parent) parent.style.display = '';
+                    
+                    parent = row.closest('[class*="border-gray-100"]');
+                    if (parent) parent.style.display = '';
+                    
+                    parent = row.closest('[class*="border-gray-200"]');
+                    if (parent) parent.style.display = '';
+                }
+            });
+            
+            // Hide empty sections, years, and departments
+            allSections.forEach(section => {
+                const visibleRows = section.querySelectorAll('tbody tr[style=""], tbody tr:not([style])');
+                if (visibleRows.length === 0) {
+                    section.style.display = 'none';
+                }
+            });
+            
+            allYears.forEach(year => {
+                const visibleSections = year.querySelectorAll('[class*="border-gray-50"]:not([style*="none"])');
+                if (visibleSections.length === 0) {
+                    year.style.display = 'none';
+                }
+            });
+            
+            allDepartments.forEach(dept => {
+                const visibleYears = dept.querySelectorAll('[class*="border-gray-100"]:not([style*="none"])');
+                if (visibleYears.length === 0) {
+                    dept.style.display = 'none';
+                }
+            });
+        }
+
+        function filterTeachers(searchTerm) {
+            const tbody = document.getElementById('teacherTableBody');
+            const rows = tbody.getElementsByTagName('tr');
+            
+            for (let row of rows) {
+                const text = row.textContent.toLowerCase();
+                if (text.includes(searchTerm.toLowerCase())) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            }
+        }
+
+        // Modal and form functions
+        function showAddStudentModal() {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            modal.innerHTML = `
+                <div class="bg-white rounded-xl p-6 w-full max-w-md">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">Add New Student</h3>
+                    <form id="addStudentForm" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+                            <input type="text" id="studentFirstName" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+                            <input type="text" id="studentLastName" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Department</label>
+                            <select id="studentDepartment" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                                ${departments.map(dept => `<option value="${dept.name}">${dept.name}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Academic Year</label>
+                            <select id="studentYear" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                                ${years.map(year => `<option value="${year}">${year}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Section</label>
+                            <select id="studentSection" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                                <!-- Sections will be populated based on selected department -->
+                            </select>
+                        </div>
+                        <div class="flex space-x-4 mt-6">
+                            <button type="button" onclick="this.closest('.fixed').remove()" class="flex-1 bg-gray-500 hover:bg-gray-600 text-white py-2 rounded-lg transition-colors">
+                                Cancel
+                            </button>
+                            <button type="submit" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg transition-colors">
+                                Add Student
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // Update sections when department changes
+            document.getElementById('studentDepartment').addEventListener('change', function() {
+                updateStudentSections(this.value);
+            });
+            
+            // Initialize sections for default department
+            updateStudentSections(document.getElementById('studentDepartment').value);
+            
+            function updateStudentSections(selectedDept) {
+                const dept = departments.find(d => d.name === selectedDept);
+                const sectionSelect = document.getElementById('studentSection');
+                
+                if (dept) {
+                    sectionSelect.innerHTML = dept.sections.map(section => `
+                        <option value="${section}">${section}</option>
+                    `).join('');
+                } else {
+                    sectionSelect.innerHTML = '<option value="">No sections available</option>';
+                }
+            }
+            
+            document.getElementById('addStudentForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const firstName = document.getElementById('studentFirstName').value;
+                const lastName = document.getElementById('studentLastName').value;
+                const department = document.getElementById('studentDepartment').value;
+                const year = document.getElementById('studentYear').value;
+                const section = document.getElementById('studentSection').value;
+                
+                const studentId = generateStudentId();
+                const password = generateStudentPassword(firstName, lastName);
+                
+                users[studentId] = {
+                    role: 'student',
+                    name: `${firstName} ${lastName}`,
+                    department: department,
+                    year: year,
+                    section: section,
+                    password: password
+                };
+                
+                modal.remove();
+                showStudents();
+                alert('Student added successfully!');
+            });
+        }
+
+        function showAddTeacherModal() {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            modal.innerHTML = `
+                <div class="bg-white rounded-xl p-6 w-full max-w-md">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">Add New Teacher</h3>
+                    <form id="addTeacherForm" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                            <input type="text" id="teacherName" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Department</label>
+                            <select id="teacherDepartment" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                                ${departments.map(dept => `<option value="${dept.name}">${dept.name}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                            <input type="text" id="teacherPassword" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Assign Years</label>
+                            <div id="yearCheckboxes" class="space-y-2 max-h-32 overflow-y-auto border border-gray-300 rounded-lg p-3">
+                                ${years.map(year => `
+                                    <label class="flex items-center">
+                                        <input type="checkbox" name="years" value="${year}" class="mr-2">
+                                        <span class="text-sm">${year}</span>
+                                    </label>
+                                `).join('')}
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Assign Sections</label>
+                            <div id="sectionCheckboxes" class="space-y-2 max-h-32 overflow-y-auto border border-gray-300 rounded-lg p-3">
+                                <!-- Sections will be populated based on selected department -->
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Assign Courses</label>
+                            <div id="courseCheckboxes" class="space-y-2 max-h-32 overflow-y-auto border border-gray-300 rounded-lg p-3">
+                                <!-- Courses will be populated based on selected department -->
+                            </div>
+                        </div>
+                        <div class="flex space-x-4 mt-6">
+                            <button type="button" onclick="this.closest('.fixed').remove()" class="flex-1 bg-gray-500 hover:bg-gray-600 text-white py-2 rounded-lg transition-colors">
+                                Cancel
+                            </button>
+                            <button type="submit" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg transition-colors">
+                                Add Teacher
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // Update sections and courses when department changes
+            document.getElementById('teacherDepartment').addEventListener('change', function() {
+                updateSectionCheckboxes(this.value);
+                updateCourseCheckboxes(this.value);
+            });
+            
+            // Initialize sections and courses for default department
+            updateSectionCheckboxes(document.getElementById('teacherDepartment').value);
+            updateCourseCheckboxes(document.getElementById('teacherDepartment').value);
+            
+            function updateSectionCheckboxes(selectedDept) {
+                const dept = departments.find(d => d.name === selectedDept);
+                const checkboxContainer = document.getElementById('sectionCheckboxes');
+                
+                if (dept) {
+                    checkboxContainer.innerHTML = dept.sections.map(section => `
+                        <label class="flex items-center">
+                            <input type="checkbox" name="sections" value="${section}" class="mr-2">
+                            <span class="text-sm">${section}</span>
+                        </label>
+                    `).join('');
+                } else {
+                    checkboxContainer.innerHTML = '<p class="text-gray-500 text-sm">No sections available</p>';
+                }
+            }
+            
+            function updateCourseCheckboxes(selectedDept) {
+                const dept = departments.find(d => d.name === selectedDept);
+                const checkboxContainer = document.getElementById('courseCheckboxes');
+                
+                if (dept) {
+                    checkboxContainer.innerHTML = dept.courses.map(course => `
+                        <label class="flex items-center">
+                            <input type="checkbox" name="courses" value="${course}" class="mr-2">
+                            <span class="text-sm">${course}</span>
+                        </label>
+                    `).join('');
+                } else {
+                    checkboxContainer.innerHTML = '<p class="text-gray-500 text-sm">No courses available</p>';
+                }
+            }
+            
+            document.getElementById('addTeacherForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const name = document.getElementById('teacherName').value;
+                const department = document.getElementById('teacherDepartment').value;
+                const password = document.getElementById('teacherPassword').value;
+                
+                // Get selected years
+                const selectedYears = Array.from(document.querySelectorAll('input[name="years"]:checked'))
+                    .map(checkbox => checkbox.value);
+                
+                // Get selected sections
+                const selectedSections = Array.from(document.querySelectorAll('input[name="sections"]:checked'))
+                    .map(checkbox => checkbox.value);
+                
+                // Get selected courses
+                const selectedCourses = Array.from(document.querySelectorAll('input[name="courses"]:checked'))
+                    .map(checkbox => checkbox.value);
+                
+                const teacherId = generateTeacherId();
+                
+                users[teacherId] = {
+                    role: 'teacher',
+                    name: name,
+                    department: department,
+                    password: password,
+                    years: selectedYears,
+                    sections: selectedSections,
+                    courses: selectedCourses
+                };
+                
+                modal.remove();
+                showTeachers();
+                alert('Teacher added successfully!');
+            });
+        }
+
+        function showAddDepartmentModal() {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            modal.innerHTML = `
+                <div class="bg-white rounded-xl p-6 w-full max-w-md">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">Add New Department</h3>
+                    <form id="addDepartmentForm" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Department Name</label>
+                            <input type="text" id="deptName" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Courses (one per line)</label>
+                            <textarea id="deptCourses" rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="Enter courses, one per line" required></textarea>
+                        </div>
+                        <div class="flex space-x-4 mt-6">
+                            <button type="button" onclick="this.closest('.fixed').remove()" class="flex-1 bg-gray-500 hover:bg-gray-600 text-white py-2 rounded-lg transition-colors">
+                                Cancel
+                            </button>
+                            <button type="submit" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg transition-colors">
+                                Add Department
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            document.getElementById('addDepartmentForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const name = document.getElementById('deptName').value;
+                const coursesText = document.getElementById('deptCourses').value;
+                const courses = coursesText.split('\n').filter(course => course.trim() !== '');
+                
+                const deptId = name.toLowerCase().replace(/\s+/g, '');
+                
+                departments.push({
+                    id: deptId,
+                    name: name,
+                    courses: courses
+                });
+                
+                modal.remove();
+                showDepartments();
+                alert('Department added successfully!');
+            });
+        }
+
+        function showAddYearModal() {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            modal.innerHTML = `
+                <div class="bg-white rounded-xl p-6 w-full max-w-md">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">Add Academic Year</h3>
+                    <form id="addYearForm" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Academic Year</label>
+                            <select id="yearSelect" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                                <option value="">Select Year Level</option>
+                                <option value="1st Year">1st Year</option>
+                                <option value="2nd Year">2nd Year</option>
+                                <option value="3rd Year">3rd Year</option>
+                                <option value="4th Year">4th Year</option>
+                                <option value="5th Year">5th Year</option>
+                                <option value="6th Year">6th Year</option>
+                            </select>
+                        </div>
+                        <div class="flex space-x-4 mt-6">
+                            <button type="button" onclick="this.closest('.fixed').remove()" class="flex-1 bg-gray-500 hover:bg-gray-600 text-white py-2 rounded-lg transition-colors">
+                                Cancel
+                            </button>
+                            <button type="submit" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg transition-colors">
+                                Add Year
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            document.getElementById('addYearForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const year = document.getElementById('yearSelect').value;
+                
+                if (!years.includes(year)) {
+                    years.push(year);
+                    // Sort years in proper order
+                    const yearOrder = ['1st Year', '2nd Year', '3rd Year', '4th Year', '5th Year', '6th Year'];
+                    years.sort((a, b) => yearOrder.indexOf(a) - yearOrder.indexOf(b));
+                    modal.remove();
+                    showYears();
+                    alert('Academic year added successfully!');
+                } else {
+                    alert('This year already exists!');
+                }
+            });
+        }
+
+        // Edit and delete functions
+        function editStudent(studentId) {
+            const student = users[studentId];
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            modal.innerHTML = `
+                <div class="bg-white rounded-xl p-6 w-full max-w-md">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">Edit Student</h3>
+                    <form id="editStudentForm" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                            <input type="text" id="editStudentName" value="${student.name}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Department</label>
+                            <select id="editStudentDepartment" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                                ${departments.map(dept => `<option value="${dept.name}" ${dept.name === student.department ? 'selected' : ''}>${dept.name}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Year</label>
+                            <select id="editStudentYear" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                                ${years.map(year => `<option value="${year}" ${year === student.year ? 'selected' : ''}>${year}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Section</label>
+                            <select id="editStudentSection" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                                ${getDepartmentSections(student.department).map(section => `<option value="${section}" ${section === student.section ? 'selected' : ''}>${section}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                            <input type="text" id="editStudentPassword" value="${student.password}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                        </div>
+                        <div class="flex space-x-4 mt-6">
+                            <button type="button" onclick="this.closest('.fixed').remove()" class="flex-1 bg-gray-500 hover:bg-gray-600 text-white py-2 rounded-lg transition-colors">
+                                Cancel
+                            </button>
+                            <button type="submit" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg transition-colors">
+                                Update Student
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            document.getElementById('editStudentForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                users[studentId].name = document.getElementById('editStudentName').value;
+                users[studentId].department = document.getElementById('editStudentDepartment').value;
+                users[studentId].year = document.getElementById('editStudentYear').value;
+                users[studentId].section = document.getElementById('editStudentSection').value;
+                users[studentId].password = document.getElementById('editStudentPassword').value;
+                
+                modal.remove();
+                showStudents();
+                alert('Student updated successfully!');
+            });
+        }
+
+        function editTeacher(teacherId) {
+            const teacher = users[teacherId];
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            modal.innerHTML = `
+                <div class="bg-white rounded-xl p-6 w-full max-w-md">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">Edit Teacher</h3>
+                    <form id="editTeacherForm" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Teacher ID</label>
+                            <input type="text" id="editTeacherId" value="${teacherId}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                            <p class="text-xs text-gray-500 mt-1">Changing ID will create a new account and delete the old one</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                            <input type="text" id="editTeacherName" value="${teacher.name}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Department</label>
+                            <select id="editTeacherDepartment" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                                ${departments.map(dept => `<option value="${dept.name}" ${dept.name === teacher.department ? 'selected' : ''}>${dept.name}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                            <input type="text" id="editTeacherPassword" value="${teacher.password}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Assign Years</label>
+                            <div id="editYearCheckboxes" class="space-y-2 max-h-32 overflow-y-auto border border-gray-300 rounded-lg p-3">
+                                ${years.map(year => `
+                                    <label class="flex items-center">
+                                        <input type="checkbox" name="editYears" value="${year}" ${(teacher.years || []).includes(year) ? 'checked' : ''} class="mr-2">
+                                        <span class="text-sm">${year}</span>
+                                    </label>
+                                `).join('')}
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Assign Sections</label>
+                            <div id="editSectionCheckboxes" class="space-y-2 max-h-32 overflow-y-auto border border-gray-300 rounded-lg p-3">
+                                <!-- Sections will be populated based on selected department -->
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Assign Courses</label>
+                            <div id="editCourseCheckboxes" class="space-y-2 max-h-32 overflow-y-auto border border-gray-300 rounded-lg p-3">
+                                <!-- Courses will be populated based on selected department -->
+                            </div>
+                        </div>
+                        <div class="flex space-x-4 mt-6">
+                            <button type="button" onclick="this.closest('.fixed').remove()" class="flex-1 bg-gray-500 hover:bg-gray-600 text-white py-2 rounded-lg transition-colors">
+                                Cancel
+                            </button>
+                            <button type="submit" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg transition-colors">
+                                Update Teacher
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // Update sections and courses when department changes
+            document.getElementById('editTeacherDepartment').addEventListener('change', function() {
+                updateEditSectionCheckboxes(this.value, teacher.sections || []);
+                updateEditCourseCheckboxes(this.value, teacher.courses || []);
+            });
+            
+            // Initialize sections and courses for current department
+            updateEditSectionCheckboxes(teacher.department, teacher.sections || []);
+            updateEditCourseCheckboxes(teacher.department, teacher.courses || []);
+            
+            function updateEditCourseCheckboxes(selectedDept, selectedCourses) {
+                const dept = departments.find(d => d.name === selectedDept);
+                const checkboxContainer = document.getElementById('editCourseCheckboxes');
+                
+                if (dept) {
+                    checkboxContainer.innerHTML = dept.courses.map(course => `
+                        <label class="flex items-center">
+                            <input type="checkbox" name="editCourses" value="${course}" ${selectedCourses.includes(course) ? 'checked' : ''} class="mr-2">
+                            <span class="text-sm">${course}</span>
+                        </label>
+                    `).join('');
+                } else {
+                    checkboxContainer.innerHTML = '<p class="text-gray-500 text-sm">No courses available</p>';
+                }
+            }
+            
+            document.getElementById('editTeacherForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const newTeacherId = document.getElementById('editTeacherId').value.trim();
+                const name = document.getElementById('editTeacherName').value;
+                const department = document.getElementById('editTeacherDepartment').value;
+                const password = document.getElementById('editTeacherPassword').value;
+                
+                // Get selected years
+                const selectedYears = Array.from(document.querySelectorAll('input[name="editYears"]:checked'))
+                    .map(checkbox => checkbox.value);
+                
+                // Get selected sections
+                const selectedSections = Array.from(document.querySelectorAll('input[name="editSections"]:checked'))
+                    .map(checkbox => checkbox.value);
+                
+                // Get selected courses
+                const selectedCourses = Array.from(document.querySelectorAll('input[name="editCourses"]:checked'))
+                    .map(checkbox => checkbox.value);
+                
+                // Check if ID already exists (and it's not the current teacher)
+                if (newTeacherId !== teacherId && users[newTeacherId]) {
+                    alert('Teacher ID already exists! Please choose a different ID.');
+                    return;
+                }
+                
+                // If ID changed, create new entry and delete old one
+                if (newTeacherId !== teacherId) {
+                    // Create new teacher entry
+                    users[newTeacherId] = {
+                        role: 'teacher',
+                        name: name,
+                        department: department,
+                        password: password,
+                        years: selectedYears,
+                        sections: selectedSections,
+                        courses: selectedCourses
+                    };
+                    
+                    // Update attendance records to reflect new teacher ID
+                    attendanceRecords.forEach(record => {
+                        if (record.teacher === users[teacherId].name) {
+                            record.teacher = name;
+                        }
+                    });
+                    
+                    // Delete old teacher entry
+                    delete users[teacherId];
+                    
+                    // If current user is the teacher being edited, update current user info
+                    if (currentUser.username === teacherId) {
+                        currentUser.username = newTeacherId;
+                        currentUser.name = name;
+                        currentUser.department = department;
+                        currentUser.password = password;
+                        currentUser.years = selectedYears;
+                        currentUser.sections = selectedSections;
+                        currentUser.courses = selectedCourses;
+                    }
+                } else {
+                    // Just update existing entry
+                    users[teacherId].name = name;
+                    users[teacherId].department = department;
+                    users[teacherId].password = password;
+                    users[teacherId].years = selectedYears;
+                    users[teacherId].sections = selectedSections;
+                    users[teacherId].courses = selectedCourses;
+                    
+                    // Update current user info if editing own account
+                    if (currentUser.username === teacherId) {
+                        currentUser.name = name;
+                        currentUser.department = department;
+                        currentUser.password = password;
+                        currentUser.years = selectedYears;
+                        currentUser.sections = selectedSections;
+                        currentUser.courses = selectedCourses;
+                    }
+                }
+                
+                modal.remove();
+                showTeachers();
+                alert('Teacher updated successfully!');
+            });
+        }
+
+        function deleteStudent(studentId) {
+            if (confirm(`Are you sure you want to delete student ${studentId}? This action cannot be undone.`)) {
+                // Remove from users object
+                delete users[studentId];
+                
+                // Remove any attendance records for this student
+                attendanceRecords = attendanceRecords.filter(record => record.studentId !== studentId);
+                
+                // Refresh the students view
+                showStudents();
+                alert('Student deleted successfully!');
+            }
+        }
+
+        function deleteTeacher(teacherId) {
+            if (confirm(`Are you sure you want to delete teacher ${teacherId}? This action cannot be undone.`)) {
+                // Remove from users object
+                delete users[teacherId];
+                
+                // Remove any attendance records created by this teacher
+                attendanceRecords = attendanceRecords.filter(record => record.teacher !== users[teacherId]?.name);
+                
+                // Refresh the teachers view
+                showTeachers();
+                alert('Teacher deleted successfully!');
+            }
+        }
+
+        function editDepartment(deptId) {
+            const dept = departments.find(d => d.id === deptId);
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            modal.innerHTML = `
+                <div class="bg-white rounded-xl p-6 w-full max-w-md">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">Edit Department</h3>
+                    <form id="editDepartmentForm" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Department Name</label>
+                            <input type="text" id="editDeptName" value="${dept.name}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Courses (one per line)</label>
+                            <textarea id="editDeptCourses" rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>${dept.courses.join('\n')}</textarea>
+                        </div>
+                        <div class="flex space-x-4 mt-6">
+                            <button type="button" onclick="this.closest('.fixed').remove()" class="flex-1 bg-gray-500 hover:bg-gray-600 text-white py-2 rounded-lg transition-colors">
+                                Cancel
+                            </button>
+                            <button type="submit" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg transition-colors">
+                                Update Department
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            document.getElementById('editDepartmentForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const name = document.getElementById('editDeptName').value;
+                const coursesText = document.getElementById('editDeptCourses').value;
+                const courses = coursesText.split('\n').filter(course => course.trim() !== '');
+                
+                const deptIndex = departments.findIndex(d => d.id === deptId);
+                departments[deptIndex] = {
+                    id: deptId,
+                    name: name,
+                    courses: courses
+                };
+                
+                modal.remove();
+                showDepartments();
+                alert('Department updated successfully!');
+            });
+        }
+
+        function deleteDepartment(deptId) {
+            if (confirm('Are you sure you want to delete this department?')) {
+                departments = departments.filter(dept => dept.id !== deptId);
+                showDepartments();
+                alert('Department deleted successfully!');
+            }
+        }
+
+        function deleteYear(year) {
+            if (confirm('Are you sure you want to delete this academic year?')) {
+                years = years.filter(y => y !== year);
+                showYears();
+                alert('Academic year deleted successfully!');
+            }
+        }
+
+        function editYear(year) {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            modal.innerHTML = `
+                <div class="bg-white rounded-xl p-6 w-full max-w-md">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">Edit Academic Year</h3>
+                    <form id="editYearForm" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Academic Year</label>
+                            <select id="editYearSelect" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                                <option value="1st Year" ${year === '1st Year' ? 'selected' : ''}>1st Year</option>
+                                <option value="2nd Year" ${year === '2nd Year' ? 'selected' : ''}>2nd Year</option>
+                                <option value="3rd Year" ${year === '3rd Year' ? 'selected' : ''}>3rd Year</option>
+                                <option value="4th Year" ${year === '4th Year' ? 'selected' : ''}>4th Year</option>
+                                <option value="5th Year" ${year === '5th Year' ? 'selected' : ''}>5th Year</option>
+                                <option value="6th Year" ${year === '6th Year' ? 'selected' : ''}>6th Year</option>
+                            </select>
+                        </div>
+                        <div class="flex space-x-4 mt-6">
+                            <button type="button" onclick="this.closest('.fixed').remove()" class="flex-1 bg-gray-500 hover:bg-gray-600 text-white py-2 rounded-lg transition-colors">
+                                Cancel
+                            </button>
+                            <button type="submit" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg transition-colors">
+                                Update Year
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            document.getElementById('editYearForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const newYear = document.getElementById('editYearSelect').value;
+                
+                if (newYear !== year && years.includes(newYear)) {
+                    alert('This year already exists!');
+                    return;
+                }
+                
+                // Update year in years array
+                const yearIndex = years.indexOf(year);
+                years[yearIndex] = newYear;
+                
+                // Update all students with this year
+                Object.values(users).forEach(user => {
+                    if (user.role === 'student' && user.year === year) {
+                        user.year = newYear;
+                    }
+                });
+                
+                // Sort years in proper order
+                const yearOrder = ['1st Year', '2nd Year', '3rd Year', '4th Year', '5th Year', '6th Year'];
+                years.sort((a, b) => yearOrder.indexOf(a) - yearOrder.indexOf(b));
+                
+                modal.remove();
+                showYears();
+                alert('Academic year updated successfully!');
+            });
+        }
+
+        function showAddClassModal() {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            modal.innerHTML = `
+                <div class="bg-white rounded-xl p-6 w-full max-w-md">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">Add New Class</h3>
+                    <form id="addClassForm" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Class Name</label>
+                            <input type="text" id="className" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="e.g., CS-D, MATH-D" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Department</label>
+                            <select id="classDepartment" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                                ${departments.map(dept => `<option value="${dept.name}">${dept.name}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Capacity</label>
+                            <input type="number" id="classCapacity" min="1" max="100" value="30" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                        </div>
+                        <div class="flex space-x-4 mt-6">
+                            <button type="button" onclick="this.closest('.fixed').remove()" class="flex-1 bg-gray-500 hover:bg-gray-600 text-white py-2 rounded-lg transition-colors">
+                                Cancel
+                            </button>
+                            <button type="submit" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg transition-colors">
+                                Add Class
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            document.getElementById('addClassForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const name = document.getElementById('className').value.trim();
+                const department = document.getElementById('classDepartment').value;
+                const capacity = parseInt(document.getElementById('classCapacity').value);
+                
+                // Check if class name already exists
+                if (classes.find(cls => cls.name.toLowerCase() === name.toLowerCase())) {
+                    alert('A class with this name already exists!');
+                    return;
+                }
+                
+                const classId = name.toLowerCase().replace(/[^a-z0-9]/g, '-');
+                
+                const newClass = {
+                    id: classId,
+                    name: name,
+                    department: department,
+                    capacity: capacity
+                };
+                
+                classes.push(newClass);
+                
+                // Also add to department sections if not already there
+                const dept = departments.find(d => d.name === department);
+                if (dept && !dept.sections.includes(name)) {
+                    dept.sections.push(name);
+                }
+                
+                modal.remove();
+                showClasses();
+                alert('Class added successfully!');
+            });
+        }
+
+        function editClass(classId) {
+            const cls = classes.find(c => c.id === classId);
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            modal.innerHTML = `
+                <div class="bg-white rounded-xl p-6 w-full max-w-md">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">Edit Class</h3>
+                    <form id="editClassForm" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Class Name</label>
+                            <input type="text" id="editClassName" value="${cls.name}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Department</label>
+                            <select id="editClassDepartment" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                                ${departments.map(dept => `<option value="${dept.name}" ${dept.name === cls.department ? 'selected' : ''}>${dept.name}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Capacity</label>
+                            <input type="number" id="editClassCapacity" value="${cls.capacity}" min="1" max="100" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                        </div>
+                        <div class="flex space-x-4 mt-6">
+                            <button type="button" onclick="this.closest('.fixed').remove()" class="flex-1 bg-gray-500 hover:bg-gray-600 text-white py-2 rounded-lg transition-colors">
+                                Cancel
+                            </button>
+                            <button type="submit" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg transition-colors">
+                                Update Class
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            document.getElementById('editClassForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const newName = document.getElementById('editClassName').value.trim();
+                const newDepartment = document.getElementById('editClassDepartment').value;
+                const newCapacity = parseInt(document.getElementById('editClassCapacity').value);
+                
+                // Check if new name conflicts with existing classes (excluding current one)
+                if (newName !== cls.name && classes.find(c => c.name.toLowerCase() === newName.toLowerCase())) {
+                    alert('A class with this name already exists!');
+                    return;
+                }
+                
+                const oldName = cls.name;
+                const oldDepartment = cls.department;
+                
+                // Update class
+                cls.name = newName;
+                cls.department = newDepartment;
+                cls.capacity = newCapacity;
+                
+                // Update students assigned to this class
+                Object.values(users).forEach(user => {
+                    if (user.role === 'student' && user.section === oldName) {
+                        user.section = newName;
+                        user.department = newDepartment;
+                    }
+                });
+                
+                // Update department sections
+                const oldDept = departments.find(d => d.name === oldDepartment);
+                if (oldDept) {
+                    const sectionIndex = oldDept.sections.indexOf(oldName);
+                    if (sectionIndex > -1) {
+                        oldDept.sections.splice(sectionIndex, 1);
+                    }
+                }
+                
+                const newDept = departments.find(d => d.name === newDepartment);
+                if (newDept && !newDept.sections.includes(newName)) {
+                    newDept.sections.push(newName);
+                }
+                
+                modal.remove();
+                showClasses();
+                alert('Class updated successfully!');
+            });
+        }
+
+        function deleteClass(classId) {
+            const cls = classes.find(c => c.id === classId);
+            const studentsInClass = Object.values(users).filter(user => 
+                user.role === 'student' && user.section === cls.name
+            ).length;
+            
+            if (studentsInClass > 0) {
+                if (!confirm(`This class has ${studentsInClass} students assigned. Deleting it will unassign these students. Are you sure?`)) {
+                    return;
+                }
+                
+                // Unassign students from this class
+                Object.values(users).forEach(user => {
+                    if (user.role === 'student' && user.section === cls.name) {
+                        user.section = 'Unassigned';
+                    }
+                });
+            }
+            
+            // Remove from classes array
+            const classIndex = classes.findIndex(c => c.id === classId);
+            classes.splice(classIndex, 1);
+            
+            // Remove from department sections
+            const dept = departments.find(d => d.name === cls.department);
+            if (dept) {
+                const sectionIndex = dept.sections.indexOf(cls.name);
+                if (sectionIndex > -1) {
+                    dept.sections.splice(sectionIndex, 1);
+                }
+            }
+            
+            showClasses();
+            alert('Class deleted successfully!');
+        }
+
+        function filterClasses(searchTerm) {
+            const classesList = document.getElementById('classesList');
+            const allRows = classesList.querySelectorAll('tbody tr');
+            const allDepartments = classesList.querySelectorAll('[class*="border-gray-200"]');
+            
+            if (!searchTerm.trim()) {
+                // Show all if search is empty
+                allRows.forEach(row => row.style.display = '');
+                allDepartments.forEach(dept => dept.style.display = '');
+                return;
+            }
+            
+            const searchLower = searchTerm.toLowerCase();
+            
+            // First hide all rows
+            allRows.forEach(row => row.style.display = 'none');
+            
+            // Show matching rows and their parent departments
+            allRows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                if (text.includes(searchLower)) {
+                    row.style.display = '';
+                    
+                    // Show parent department
+                    let parent = row.closest('[class*="border-gray-200"]');
+                    if (parent) parent.style.display = '';
+                }
+            });
+            
+            // Hide empty departments
+            allDepartments.forEach(dept => {
+                const visibleRows = dept.querySelectorAll('tbody tr[style=""], tbody tr:not([style])');
+                if (visibleRows.length === 0) {
+                    dept.style.display = 'none';
+                }
+            });
+        }
+
+        function updateSectionsForYear() {
+            const selectedYear = document.getElementById('yearSelect').value;
+            const sectionSelect = document.getElementById('sectionSelect');
+            
+            // Filter sections that have students in the selected year
+            const availableSections = currentUser.sections.filter(section => {
+                return Object.values(users).some(user => 
+                    user.role === 'student' && 
+                    user.department === currentUser.department &&
+                    user.year === selectedYear &&
+                    user.section === section
+                );
+            });
+            
+            sectionSelect.innerHTML = availableSections.map(section => 
+                `<option value="${section}">${section}</option>`
+            ).join('');
+            
+            updateStudentList();
+        }
+        
+        function updateStudentList() {
+            const selectedYear = document.getElementById('yearSelect').value;
+            const selectedSection = document.getElementById('sectionSelect').value;
+            
+            const students = Object.entries(users).filter(([id, user]) => 
+                user.role === 'student' && 
+                user.department === currentUser.department &&
+                user.year === selectedYear &&
+                user.section === selectedSection
+            );
+            
+            const tableBody = document.getElementById('studentAttendanceTable');
+            tableBody.innerHTML = students.map(([id, student]) => `
+                <tr class="border-b border-gray-200">
+                    <td class="px-4 py-3 text-sm text-gray-800">${id}</td>
+                    <td class="px-4 py-3 text-sm text-gray-800">${student.name}</td>
+                    <td class="px-4 py-3 text-sm text-gray-600">${student.year}</td>
+                    <td class="px-4 py-3 text-center">
+                        <div class="flex justify-center space-x-2">
+                            <label class="flex items-center">
+                                <input type="radio" name="attendance_${id}" value="present" class="mr-1 text-green-500">
+                                <span class="text-green-600 text-sm">Present</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="radio" name="attendance_${id}" value="absent" class="mr-1 text-red-500">
+                                <span class="text-red-600 text-sm">Absent</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="radio" name="attendance_${id}" value="late" class="mr-1 text-yellow-500">
+                                <span class="text-yellow-600 text-sm">Late</span>
+                            </label>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function saveAttendance() {
+            const course = document.getElementById('courseSelect').value;
+            const date = document.getElementById('attendanceDate').value;
+            const time = document.getElementById('attendanceTime').value;
+            const selectedYear = document.getElementById('yearSelect').value;
+            const selectedSection = document.getElementById('sectionSelect').value;
+            
+            if (!course || !date || !time) {
+                alert('Please fill in all fields!');
+                return;
+            }
+            
+            const students = Object.entries(users).filter(([id, user]) => 
+                user.role === 'student' && 
+                user.department === currentUser.department &&
+                user.year === selectedYear &&
+                user.section === selectedSection
+            );
+            
+            let savedCount = 0;
+            
+            students.forEach(([studentId, student]) => {
+                const attendanceRadios = document.getElementsByName(`attendance_${studentId}`);
+                let status = null;
+                
+                for (let radio of attendanceRadios) {
+                    if (radio.checked) {
+                        status = radio.value;
+                        break;
+                    }
+                }
+                
+                if (status) {
+                    // Check if record already exists for this student, course, and date
+                    const existingIndex = attendanceRecords.findIndex(record => 
+                        record.studentId === studentId && 
+                        record.course === course && 
+                        record.date === date
+                    );
+                    
+                    const attendanceRecord = {
+                        studentId: studentId,
+                        studentName: student.name,
+                        course: course,
+                        date: date,
+                        time: time,
+                        status: status,
+                        teacher: currentUser.name,
+                        department: currentUser.department
+                    };
+                    
+                    if (existingIndex >= 0) {
+                        // Update existing record
+                        attendanceRecords[existingIndex] = attendanceRecord;
+                    } else {
+                        // Add new record
+                        attendanceRecords.push(attendanceRecord);
+                    }
+                    
+                    savedCount++;
+                }
+            });
+            
+            if (savedCount > 0) {
+                alert(`Attendance saved successfully for ${savedCount} students!`);
+                // Clear the form
+                students.forEach(([studentId]) => {
+                    const attendanceRadios = document.getElementsByName(`attendance_${studentId}`);
+                    attendanceRadios.forEach(radio => radio.checked = false);
+                });
+            } else {
+                alert('Please mark attendance for at least one student!');
+            }
+        }
+
+        function getDepartmentSections(departmentName) {
+            const dept = departments.find(d => d.name === departmentName);
+            return dept ? dept.sections : [];
+        }
+
+        function updateEditSectionCheckboxes(selectedDept, selectedSections) {
+            const dept = departments.find(d => d.name === selectedDept);
+            const checkboxContainer = document.getElementById('editSectionCheckboxes');
+            
+            if (dept) {
+                checkboxContainer.innerHTML = dept.sections.map(section => `
+                    <label class="flex items-center">
+                        <input type="checkbox" name="editSections" value="${section}" ${selectedSections.includes(section) ? 'checked' : ''} class="mr-2">
+                        <span class="text-sm">${section}</span>
+                    </label>
+                `).join('');
+            } else {
+                checkboxContainer.innerHTML = '<p class="text-gray-500 text-sm">No sections available</p>';
+            }
+        }
+
+        function generateYearReport(deptId, year) {
+            const dept = departments.find(d => d.id === deptId);
+            const yearStudents = Object.entries(users).filter(([id, user]) => 
+                user.role === 'student' && user.department === dept.name && user.year === year
+            );
+            
+            // Group by sections
+            const studentsBySection = {};
+            yearStudents.forEach(([id, student]) => {
+                const section = student.section || 'Unassigned';
+                if (!studentsBySection[section]) {
+                    studentsBySection[section] = [];
+                }
+                studentsBySection[section].push([id, student]);
+            });
+            
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            modal.innerHTML = `
+                <div class="bg-white rounded-xl p-6 w-full max-w-5xl max-h-[90vh] overflow-y-auto">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-2xl font-bold text-gray-800">${dept.name} - ${year} Report</h3>
+                        <button onclick="this.closest('.fixed').remove()" class="text-gray-500 hover:text-gray-700">
+                            <span class="text-2xl">×</span>
+                        </button>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                            <h4 class="text-lg font-semibold text-blue-800">Total Students</h4>
+                            <div class="text-3xl font-bold text-blue-600">${yearStudents.length}</div>
+                        </div>
+                        <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                            <h4 class="text-lg font-semibold text-green-800">Sections</h4>
+                            <div class="text-3xl font-bold text-green-600">${Object.keys(studentsBySection).length}</div>
+                        </div>
+                        <div class="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                            <h4 class="text-lg font-semibold text-purple-800">Avg Attendance</h4>
+                            <div class="text-3xl font-bold text-purple-600">${Math.floor(Math.random() * 20) + 80}%</div>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-6">
+                        ${Object.entries(studentsBySection).sort().map(([section, sectionStudents]) => `
+                            <div class="border border-gray-200 rounded-lg overflow-hidden">
+                                <div class="bg-purple-50 border-b border-gray-200 px-4 py-3">
+                                    <h4 class="text-lg font-semibold text-purple-800 flex items-center">
+                                        <span class="text-xl mr-2">👥</span>
+                                        Section ${section}
+                                        <span class="ml-2 bg-purple-100 text-purple-600 px-2 py-1 rounded-full text-sm">
+                                            ${sectionStudents.length} students
+                                        </span>
+                                    </h4>
+                                </div>
+                                
+                                <div class="overflow-x-auto">
+                                    <table class="w-full table-auto">
+                                        <thead>
+                                            <tr class="bg-gray-50">
+                                                <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Student ID</th>
+                                                <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Name</th>
+                                                <th class="px-4 py-2 text-center text-sm font-medium text-gray-700">Attendance %</th>
+                                                <th class="px-4 py-2 text-center text-sm font-medium text-gray-700">Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            ${sectionStudents.map(([id, student]) => {
+                                                const attendance = Math.floor(Math.random() * 20) + 80;
+                                                const status = attendance >= 90 ? 'Excellent' : attendance >= 80 ? 'Good' : attendance >= 70 ? 'Average' : 'Poor';
+                                                const statusColor = attendance >= 90 ? 'bg-green-100 text-green-800' : 
+                                                                  attendance >= 80 ? 'bg-blue-100 text-blue-800' : 
+                                                                  attendance >= 70 ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800';
+                                                
+                                                return `
+                                                    <tr class="border-b border-gray-200">
+                                                        <td class="px-4 py-2 text-sm text-gray-800">${id}</td>
+                                                        <td class="px-4 py-2 text-sm text-gray-800">${student.name}</td>
+                                                        <td class="px-4 py-2 text-center">
+                                                            <span class="font-medium">${attendance}%</span>
+                                                        </td>
+                                                        <td class="px-4 py-2 text-center">
+                                                            <span class="${statusColor} px-2 py-1 rounded-full text-xs">
+                                                                ${status}
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                `;
+                                            }).join('')}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <div class="flex justify-end space-x-4 mt-6">
+                        <button onclick="downloadReport('${dept.name} ${year}')" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg transition-colors">
+                            Download PDF
+                        </button>
+                        <button onclick="this.closest('.fixed').remove()" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg transition-colors">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+        }
+
+        function generateDepartmentReport(deptId) {
+            const dept = departments.find(d => d.id === deptId);
+            const deptStudents = Object.entries(users).filter(([id, user]) => 
+                user.role === 'student' && user.department === dept.name
+            );
+            
+            // Group by year and section
+            const studentsByYear = {};
+            deptStudents.forEach(([id, student]) => {
+                const year = student.year || 'Unassigned';
+                const section = student.section || 'Unassigned';
+                
+                if (!studentsByYear[year]) {
+                    studentsByYear[year] = {};
+                }
+                if (!studentsByYear[year][section]) {
+                    studentsByYear[year][section] = [];
+                }
+                studentsByYear[year][section].push([id, student]);
+            });
+            
+            // Create a detailed report modal
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            modal.innerHTML = `
+                <div class="bg-white rounded-xl p-6 w-full max-w-6xl max-h-[90vh] overflow-y-auto">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-2xl font-bold text-gray-800">${dept.name} Department Report</h3>
+                        <button onclick="this.closest('.fixed').remove()" class="text-gray-500 hover:text-gray-700">
+                            <span class="text-2xl">×</span>
+                        </button>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                            <h4 class="text-lg font-semibold text-blue-800">Total Students</h4>
+                            <div class="text-3xl font-bold text-blue-600">${deptStudents.length}</div>
+                        </div>
+                        <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                            <h4 class="text-lg font-semibold text-green-800">Total Courses</h4>
+                            <div class="text-3xl font-bold text-green-600">${dept.courses.length}</div>
+                        </div>
+                        <div class="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                            <h4 class="text-lg font-semibold text-purple-800">Academic Years</h4>
+                            <div class="text-3xl font-bold text-purple-600">${Object.keys(studentsByYear).length}</div>
+                        </div>
+                        <div class="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                            <h4 class="text-lg font-semibold text-orange-800">Avg Attendance</h4>
+                            <div class="text-3xl font-bold text-orange-600">87%</div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h4 class="text-lg font-semibold text-gray-800 mb-3">Courses Offered</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+                            ${dept.courses.map(course => `
+                                <div class="bg-gray-50 border border-gray-200 rounded-lg p-3">
+                                    <span class="font-medium">${course}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-6">
+                        <h4 class="text-lg font-semibold text-gray-800">Students by Year & Section</h4>
+                        ${Object.entries(studentsByYear).sort((a, b) => {
+                            const yearOrder = ['1st Year', '2nd Year', '3rd Year', '4th Year'];
+                            return yearOrder.indexOf(a[0]) - yearOrder.indexOf(b[0]);
+                        }).map(([year, sections]) => `
+                            <div class="border border-gray-200 rounded-lg overflow-hidden">
+                                <div class="bg-green-50 border-b border-gray-200 px-4 py-3">
+                                    <h5 class="text-lg font-semibold text-green-800 flex items-center">
+                                        <span class="text-xl mr-2">📅</span>
+                                        ${year}
+                                        <span class="ml-2 bg-green-100 text-green-600 px-2 py-1 rounded-full text-sm">
+                                            ${Object.values(sections).reduce((total, students) => total + students.length, 0)} students
+                                        </span>
+                                    </h5>
+                                </div>
+                                
+                                <div class="p-4 space-y-4">
+                                    ${Object.entries(sections).sort().map(([section, sectionStudents]) => `
+                                        <div class="border border-gray-100 rounded-lg overflow-hidden">
+                                            <div class="bg-purple-50 border-b border-gray-100 px-3 py-2">
+                                                <h6 class="text-md font-semibold text-purple-800 flex items-center">
+                                                    <span class="text-lg mr-2">👥</span>
+                                                    Section ${section}
+                                                    <span class="ml-2 bg-purple-100 text-purple-600 px-2 py-1 rounded-full text-xs">
+                                                        ${sectionStudents.length} students
+                                                    </span>
+                                                </h6>
+                                            </div>
+                                            
+                                            <div class="overflow-x-auto">
+                                                <table class="w-full table-auto">
+                                                    <thead>
+                                                        <tr class="bg-gray-50">
+                                                            <th class="px-3 py-2 text-left text-xs font-medium text-gray-700">Student ID</th>
+                                                            <th class="px-3 py-2 text-left text-xs font-medium text-gray-700">Name</th>
+                                                            <th class="px-3 py-2 text-center text-xs font-medium text-gray-700">Attendance %</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        ${sectionStudents.map(([id, student]) => `
+                                                            <tr class="border-b border-gray-100">
+                                                                <td class="px-3 py-2 text-xs text-gray-800">${id}</td>
+                                                                <td class="px-3 py-2 text-xs text-gray-800">${student.name}</td>
+                                                                <td class="px-3 py-2 text-center">
+                                                                    <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">
+                                                                        ${Math.floor(Math.random() * 20) + 80}%
+                                                                    </span>
+                                                                </td>
+                                                            </tr>
+                                                        `).join('')}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <div class="flex justify-end space-x-4 mt-6">
+                        <button onclick="downloadReport('${dept.name}')" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg transition-colors">
+                            Download PDF
+                        </button>
+                        <button onclick="this.closest('.fixed').remove()" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg transition-colors">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+        }
+        
+        function downloadReport(deptName) {
+            alert(`Downloading ${deptName} department report as PDF...`);
+        }
+        
+        function downloadCourseReport(courseName) {
+            alert(`Downloading ${courseName} course report as PDF...`);
+        }
+        
+        function getRecentSessions(records) {
+            // Group records by date and course to get unique sessions
+            const sessions = {};
+            
+            records.forEach(record => {
+                const key = `${record.date}_${record.course}_${record.time}`;
+                if (!sessions[key]) {
+                    sessions[key] = {
+                        course: record.course,
+                        date: record.date,
+                        time: record.time,
+                        present: 0,
+                        absent: 0,
+                        late: 0
+                    };
+                }
+                
+                sessions[key][record.status]++;
+            });
+            
+            // Convert to array and sort by date (most recent first)
+            return Object.values(sessions)
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .slice(0, 10); // Show last 10 sessions
+        }
+
+        function logout() {
+            currentUser = null;
+            document.getElementById('dashboard').classList.add('hidden');
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97b87b5882068a67',t:'MTc1NzI3MTk3MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
