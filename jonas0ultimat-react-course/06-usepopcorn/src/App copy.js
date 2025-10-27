@@ -1,5 +1,7 @@
 import { useState } from "react";
 
+//starter data for usepopcorn app
+
 const tempMovieData = [
   {
     imdbID: "tt1375666",
