@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import StarRating from "./StarRating";
 
 const average = (arr) =>
@@ -8,9 +8,15 @@ export default function App() {
   const [query, setQuery] = useState("");
   const [movies, setMovies] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [watched, setWatched] = useState([]);
+
   const [error, setError] = useState("");
   const [selectedId, setSelectedId] = useState(null);
+
+  //const [watched, setWatched] = useState([]);
+  const [watched, setWatched] = useState(function () {
+    const storedData = localStorage.getItem("watched");
+    return JSON.parse(storedData);
+  });
 
   function handleSelectedMovie(id) {
     setSelectedId((selectedId) => (id === selectedId ? null : id));
@@ -21,12 +27,19 @@ export default function App() {
 
   function handleAddWached(movie) {
     setWatched((watched) => [...watched, movie]);
+    //localStorage.setItem("watched", JSON.stringify([...watched, movie]));
   }
 
   function handleDeleteWatched(id) {
     setWatched((watched) => watched.filter((movie) => movie.imdbID !== id));
   }
 
+  useEffect(
+    function () {
+      localStorage.setItem("watched", JSON.stringify(watched));
+    },
+    [watched]
+  );
   useEffect(
     function () {
       const controller = new AbortController();
@@ -147,6 +160,25 @@ function Logo() {
 }
 
 function Search({ query, setQuery }) {
+  const inputElement = useRef(null); //to focus input on load and to access dom element
+
+  useEffect(
+    function () {
+      function callBack(e) {
+        //global event listener for keydown  to focus input on pressing enter key
+        if (document.activeElement === inputElement.current) return; //if input is already focused do nothing
+        if (e.key === "Enter") {
+          inputElement.current.focus();
+          setQuery("");
+        }
+      }
+      document.addEventListener("keydown", callBack);
+      return () => document.addEventListener("keydown", callBack);
+
+      //focus input on load after first render and mount and every re-render and to access dom element and its properties
+    },
+    [setQuery]
+  );
   return (
     <input
       className="search"
@@ -154,6 +186,7 @@ function Search({ query, setQuery }) {
       placeholder="Search movies..."
       value={query}
       onChange={(e) => setQuery(e.target.value)}
+      ref={inputElement}
     />
   );
 }
@@ -226,7 +259,9 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
   } = movie;
   /*eslint-disable */
 
-  if (imdbRating > 8) [isTop, setIsTop] = useState();
+  //if (imdbRating > 8) [isTop, setIsTop] = useState(); no hooks in conditionals in react
+
+  const [avgRating, setAvgRating] = useState(0);
 
   function handleAdd() {
     const newWatchedMovie = {
@@ -241,6 +276,8 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
 
     onAddWatched(newWatchedMovie);
     onCloseMovie();
+    // setAvgRating(Number(imdbRating));
+    // setAvgRating((avg) => (avg + Number(userRating)) / 2); //use callback functional update to get latest state
   }
   useEffect(
     function () {
@@ -306,6 +343,7 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
               </p>
             </div>
           </header>
+          {/* <p>{avgRating}</p> */}
           <section>
             <div className="rating">
               {!isWatched ? (
