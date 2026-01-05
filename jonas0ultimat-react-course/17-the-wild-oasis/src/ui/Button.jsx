@@ -47,6 +47,7 @@ const variations = {
     }
   `,
 };
+<<<<<<< HEAD
 
 const Button = styled.button`
   font-size: 1.4em;
@@ -64,3 +65,5 @@ const Button = styled.button`
   }
 `;
 export default Button;
+=======
+>>>>>>> 5479f4d4c1532b781d04bba6ffe382a9429f3775
