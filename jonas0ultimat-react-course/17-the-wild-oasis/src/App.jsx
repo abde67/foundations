@@ -12,12 +12,12 @@ function App() {
     <>
       <GlobalStyle />
       <StyeldApp>
-        <Heading>Welcome to The Wild Oasis</Heading>
+        <Heading as="h2">Welcome to The Wild Oasis</Heading>
+        <Heading as="h1">Welcome to The Wild Oasis</Heading>
+        <Heading as="h3">Welcome to The Wild Oasis</Heading>
       </StyeldApp>
     </>
   );
 }
-
-
 
 export default App;
