@@ -12,7 +12,7 @@ import toast from "react-hot-toast";
 
 const FormRow2 = styled.div`
   display: grid;
-  align-items: center;
+  align-items: center; 
   grid-template-columns: 24rem 1fr 1.2fr;
   gap: 2.4rem;
 
