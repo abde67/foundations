@@ -5,7 +5,7 @@ const FileInput = styled.input.attrs({ type: "file" })`
   border-radius: var(--border-radius-sm);
 
   &::file-selector-button {
-    font: inherit;
+    font: inherit; 
     font-weight: 500;
     padding: 0.8rem 1.2rem;
     margin-right: 1.2rem;
