@@ -16,7 +16,7 @@ import toast from "react-hot-toast";
 
 function CreateCabinForm({cabinToEdit={}}) {
 const {id:editID,...editValues}=cabinToEdit
-const isEditSession=Boolean(editId)
+const isEditSession=Boolean(editID)
 
   const queryClient = useQueryClient();
   const { register, handleSubmit, reset, getValues, formState } = useForm(
@@ -119,7 +119,7 @@ const isEditSession=Boolean(editId)
           id="image"
           accept="image/*"
           {...register("image", {
-            required: "This field is required",
+            required: isEditSession ? false : "This field is required",
           })}
         />
       </FormRow>
@@ -129,7 +129,7 @@ const isEditSession=Boolean(editId)
         <Button variation="secondary" type="reset">
           Cancel
         </Button>
-        <Button disabled={isCereating}>Add cabin</Button>
+        <Button disabled={isCereating}>{isEditSession ? "Edit cabin" : "create new cabin"}</Button>
       </FormRow>
     </Form>
   );
