@@ -20,7 +20,7 @@ const isEditSession=Boolean(editID)
 
   const queryClient = useQueryClient();
   const { register, handleSubmit, reset, getValues, formState } = useForm(
- {   defaultValue:isEditSession?editValues:{}}
+ {   defaultValues:isEditSession?editValues:{},}
   );
   const { errors } = formState;
   const { mutate:createCabin, isLoading: isCereating } = useMutation({
@@ -46,9 +46,9 @@ const isEditSession=Boolean(editID)
 const isWorking=isCereating||isEditing
 
   function onSubmit(data) {
-const image=typeof data.image==="string"?data.image:data.image[0]
+    const image=typeof data.image==="string"?data.image:data.image[0]
 
-if(isEditSession) editCabin({newCabinData:{...data,image},id:editID})
+  if(isEditSession) editCabin({newCabinData:{...data,image},id:editID})
 
   else createCabin({ ...data, image:image });
   }
@@ -88,7 +88,7 @@ if(isEditSession) editCabin({newCabinData:{...data,image},id:editID})
         <Input
           type="number"
           id="regularPrice"
-          disabled={isCereating}
+          disabled={isWorking}
           {...register("regularPrice", {
             required: "This field is required",
             min: {
@@ -103,7 +103,7 @@ if(isEditSession) editCabin({newCabinData:{...data,image},id:editID})
         <Input
           type="number"
           id="discount"
-          disabled={isCereating}
+          disabled={isWorking}
           defaultValue={0}
           {...register("discount", {
             required: "This field is required",
@@ -117,12 +117,12 @@ if(isEditSession) editCabin({newCabinData:{...data,image},id:editID})
       <FormRow
         label="description for website"
         error={errors?.description?.message}
-        disabled={isCereating}
+        disabled={isWorking}
       >
         <Textarea
           type="number"
           id="description"
-          disabled={isCereating}
+          disabled={isWorking}
           defaultValue=""
           {...register("description", {
             required: "This field is required",
@@ -145,7 +145,7 @@ if(isEditSession) editCabin({newCabinData:{...data,image},id:editID})
         <Button variation="secondary" type="reset">
           Cancel
         </Button>
-        <Button disabled={isCereating}>{isEditSession ? "Edit cabin" : "create new cabin"}</Button>
+        <Button disabled={isWorking}>{isEditSession ? "Edit cabin" : "create new cabin"}</Button>
       </FormRow>
     </Form>
   );
