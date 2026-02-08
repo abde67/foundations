@@ -10,10 +10,6 @@ import {  useMutation, useQueryClient } from "@tanstack/react-query";
 import { createEditCabin } from "../../services/apiCabins";
 import toast from "react-hot-toast";
 
-
-
-
-
 function CreateCabinForm({cabinToEdit={}}) {
 const {id:editID,...editValues}=cabinToEdit
 const isEditSession=Boolean(editID)
@@ -52,9 +48,9 @@ const isWorking=isCereating||isEditing
 
   else createCabin({ ...data, image:image });
   }
-   function onError(errors) {
+  //  function onError(errors) {
   
-   }
+  //  }
 
   return (
     <Form onSubmit={handleSubmit(onSubmit)}>
