@@ -6,8 +6,8 @@ import Button from "../../ui/Button";
 import FileInput from "../../ui/FileInput";
 import Textarea from "../../ui/Textarea";
 import { useForm } from "react-hook-form";
-import { defaultShouldDehydrateQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { createCabin } from "../../services/apiCabins";
+import {  useMutation, useQueryClient } from "@tanstack/react-query";
+import { createEditCabin } from "../../services/apiCabins";
 import toast from "react-hot-toast";
 
 
@@ -20,11 +20,11 @@ const isEditSession=Boolean(editID)
 
   const queryClient = useQueryClient();
   const { register, handleSubmit, reset, getValues, formState } = useForm(
-    isEditSession ? { defaultValues: editValues } : {}
+ {   defaultValue:isEditSession?editValues:{}}
   );
   const { errors } = formState;
-  const { mutate, isLoading: isCereating } = useMutation({
-    mutationFn: createCabin,
+  const { mutate:createCabin, isLoading: isCereating } = useMutation({
+    mutationFn: createEditCabin,
     onSuccess: () => {
       toast.success("Cabin created successfully");
       queryClient.invalidateQueries({ queryKey: ["cabins"] });
@@ -33,12 +33,28 @@ const isEditSession=Boolean(editID)
     onError: (err) => toast.error(err.message),
   });
 
+   const { mutate:editCabin, isLoading: isEditing } = useMutation({
+    mutationFn:({newCabinData,id})=> createEditCabin(newCabinData,id),
+    onSuccess: () => {
+      toast.success("Cabin edited successfully");
+      queryClient.invalidateQueries({ queryKey: ["cabins"] });
+      reset();
+    },
+    onError: (err) => toast.error(err.message),
+  });
+
+const isWorking=isCereating||isEditing
+
   function onSubmit(data) {
-    mutate({ ...data, image: data.image[0] });
+const image=typeof data.image==="string"?data.image:data.image[0]
+
+if(isEditSession) editCabin({newCabinData:{...data,image},id:editID})
+
+  else createCabin({ ...data, image:image });
   }
-  // function onError(errors) {
-  //   console.log(errors);
-  // }
+   function onError(errors) {
+  
+   }
 
   return (
     <Form onSubmit={handleSubmit(onSubmit)}>
@@ -46,7 +62,7 @@ const isEditSession=Boolean(editID)
         <Input
           type="text"
           id="name"
-          disabled={isCereating}
+          disabled={isWorking}
           {...register("name", {
             required: "This field is required",
           })}
@@ -57,7 +73,7 @@ const isEditSession=Boolean(editID)
         <Input
           type="number"
           id="maxCapacity"
-          disabled={isCereating}
+          disabled={isWorking}
           {...register("maxCapacity", {
             required: "This field is required",
             min: {
