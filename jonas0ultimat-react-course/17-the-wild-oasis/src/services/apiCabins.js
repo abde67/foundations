@@ -13,9 +13,7 @@ export async function getCabins() {
   return data;
 }
 export async function createEditCabin(newCabin,id) {
-const hasImagePath=newCabin.image?.startsWith?.(supabaseUrl
-  
-)
+const hasImagePath=newCabin.image?.startsWith?.(supabaseUrl)
 
 
   const imageFile = newCabin.image[0];
@@ -27,17 +25,15 @@ const hasImagePath=newCabin.image?.startsWith?.(supabaseUrl
   
  
   //1.create cabin
-   if (!id)
-  query=query 
-    .insert([{ ...newCabin, image: imagePath }])
+   if (!id)query=query .insert([{ ...newCabin, image: imagePath }])
 
 
   //TO EDIT
-if (!id) query= query.update({...newCabin,image:imagePath}).eq("id",id)
+if (id) query= query.update({...newCabin,image:imagePath}).eq("id",id)
 
     const {data,error}=await query.select()
     .single();
-
+ 
   if (error) {
     console.log(error);
     throw new Error("cabins could not be created");
